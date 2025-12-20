@@ -73,9 +73,10 @@ echo.
 :: ========== 创建数据目录 ==========
 echo  [3/3] 初始化数据目录...
 
-if not exist "backend\data" mkdir "backend\data"
-if not exist "backend\input" mkdir "backend\input"
-if not exist "backend\output" mkdir "backend\output"
+if not exist "data" mkdir "data"
+if not exist "input" mkdir "input"
+if not exist "output" mkdir "output"
+if not exist "creative_images" mkdir "creative_images"
 
 echo  ✓ 数据目录已创建
 echo.
