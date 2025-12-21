@@ -17,6 +17,7 @@ import { MoveOutIcon } from './icons/MoveOutIcon';
 import { RenameIcon } from './icons/RenameIcon';
 import { LayersIcon } from './icons/GridIcon';
 import JSZip from 'jszip';
+import { normalizeImageUrl } from '../App';
 
 interface DesktopProps {
   items: DesktopItem[];
@@ -1461,7 +1462,7 @@ export const Desktop: React.FC<DesktopProps> = ({
             >
               {item.type === 'image' ? (
                 <img
-                  src={(item as DesktopImageItem).imageUrl}
+                  src={normalizeImageUrl((item as DesktopImageItem).imageUrl)}
                   alt={item.name}
                   className="w-full h-full object-cover"
                   draggable={false}
@@ -1482,7 +1483,7 @@ export const Desktop: React.FC<DesktopProps> = ({
                     return stackImages.map((img, idx) => (
                       <img
                         key={img.id}
-                        src={img.imageUrl}
+                        src={normalizeImageUrl(img.imageUrl)}
                         alt={img.name}
                         className="absolute rounded-lg object-cover"
                         style={{
@@ -1641,7 +1642,7 @@ export const Desktop: React.FC<DesktopProps> = ({
                 onClick={() => onImagePreview?.(selectedImageItem)}
               >
                 <img
-                  src={selectedImageItem.imageUrl}
+                  src={normalizeImageUrl(selectedImageItem.imageUrl)}
                   alt={selectedImageItem.name}
                   className="rounded-lg"
                   style={{

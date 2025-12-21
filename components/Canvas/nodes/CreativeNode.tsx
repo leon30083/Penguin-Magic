@@ -2,6 +2,7 @@ import React, { memo, useState, useCallback } from 'react';
 import { Handle, Position, NodeProps } from '@xyflow/react';
 import type { CanvasNodeData } from '../index';
 import { useTheme } from '../../../contexts/ThemeContext';
+import { normalizeImageUrl } from '../../../App';
 
 const CreativeNode: React.FC<NodeProps> = ({ id, data, selected }) => {
   const { theme } = useTheme();
@@ -57,7 +58,7 @@ const CreativeNode: React.FC<NodeProps> = ({ id, data, selected }) => {
           <div className="flex items-center gap-3 mb-3">
             {idea.imageUrl && (
               <img
-                src={idea.imageUrl}
+                src={normalizeImageUrl(idea.imageUrl)}
                 alt={idea.title}
                 className="w-12 h-12 rounded-xl object-cover border border-white/20 shadow-lg"
               />

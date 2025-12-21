@@ -4,6 +4,7 @@ import { ZoomInIcon } from './icons/ZoomInIcon';
 import { ZoomOutIcon } from './icons/ZoomOutIcon';
 import { ResetZoomIcon } from './icons/ResetZoomIcon';
 import { DownloadIcon } from './icons/DownloadIcon';
+import { normalizeImageUrl } from '../App';
 
 
 interface ImagePreviewModalProps {
@@ -71,10 +72,13 @@ export const ImagePreviewModal: React.FC<ImagePreviewModalProps> = ({ imageUrl, 
     const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
     const filename = `ai-generated-${timestamp}.png`;
     
+    // 使用 normalizeImageUrl 处理 URL
+    const normalizedUrl = normalizeImageUrl(imageUrl);
+    
     // 如果是 base64 数据，直接下载
-    if (imageUrl.startsWith('data:')) {
+    if (normalizedUrl.startsWith('data:')) {
       const link = document.createElement('a');
-      link.href = imageUrl;
+      link.href = normalizedUrl;
       link.download = filename;
       document.body.appendChild(link);
       link.click();
@@ -84,7 +88,7 @@ export const ImagePreviewModal: React.FC<ImagePreviewModalProps> = ({ imageUrl, 
     
     // 对于外部URL，尝试使用fetch获取blob后下载
     try {
-      const response = await fetch(imageUrl);
+      const response = await fetch(normalizedUrl);
       const blob = await response.blob();
       const blobUrl = URL.createObjectURL(blob);
       const link = document.createElement('a');
@@ -97,7 +101,7 @@ export const ImagePreviewModal: React.FC<ImagePreviewModalProps> = ({ imageUrl, 
     } catch (err) {
       // 如果fetch失败（CORS等问题），在新窗口打开
       console.error('下载失败，尝试在新窗口打开:', err);
-      window.open(imageUrl, '_blank');
+      window.open(normalizedUrl, '_blank');
     }
   };
 
@@ -131,7 +135,7 @@ export const ImagePreviewModal: React.FC<ImagePreviewModalProps> = ({ imageUrl, 
             <p className="text-gray-400 mb-2">图片加载失败</p>
             <p className="text-xs text-gray-500">第三方图片可能已过期或无法访问</p>
             <a 
-              href={imageUrl} 
+              href={normalizeImageUrl(imageUrl)} 
               target="_blank" 
               rel="noopener noreferrer"
               className="mt-3 text-xs text-blue-400 hover:text-blue-300 underline"
@@ -141,7 +145,7 @@ export const ImagePreviewModal: React.FC<ImagePreviewModalProps> = ({ imageUrl, 
           </div>
         ) : (
           <img 
-              src={imageUrl} 
+              src={normalizeImageUrl(imageUrl)} 
               alt="Image Preview" 
               className="block rounded-lg shadow-2xl"
               style={{ 

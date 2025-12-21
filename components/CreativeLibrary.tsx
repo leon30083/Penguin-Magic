@@ -1,4 +1,5 @@
 
+
 import React, { useState, useMemo, useRef } from 'react';
 import type { CreativeIdea } from '../types';
 import { PlusCircleIcon } from './icons/PlusCircleIcon';
@@ -8,6 +9,7 @@ import { EditIcon } from './icons/EditIcon';
 import { DownloadIcon } from './icons/DownloadIcon';
 import { UploadIcon } from './icons/UploadIcon';
 import { useTheme } from '../contexts/ThemeContext';
+import { normalizeImageUrl } from '../App';
 
 
 interface CreativeLibraryProps {
@@ -203,7 +205,7 @@ export const CreativeLibrary: React.FC<CreativeLibraryProps> = ({ ideas, onBack,
                 onDragEnd={handleDragSort}
                 onDragOver={(e) => e.preventDefault()}
                 >
-                  <img src={idea.imageUrl} alt={idea.title} className="w-full h-full object-contain transition-transform duration-500 group-hover:scale-105 p-0.5 pointer-events-none" />
+                  <img src={normalizeImageUrl(idea.imageUrl)} alt={idea.title} className="w-full h-full object-contain transition-transform duration-500 group-hover:scale-105 p-0.5 pointer-events-none" />
                   <div className="absolute inset-0" onClick={() => onUse(idea)} style={{ cursor: 'pointer' }}></div>
                   <div className="absolute inset-x-0 bottom-0 p-2 bg-gradient-to-t from-black/90 to-transparent pointer-events-none">
                       <h3 className="font-medium text-white truncate text-xs">{idea.title}</h3>

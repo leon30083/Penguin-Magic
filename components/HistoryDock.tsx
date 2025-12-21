@@ -3,6 +3,7 @@ import { GenerationHistory, DesktopImageItem, DesktopPosition } from '../types';
 import { useTheme } from '../contexts/ThemeContext';
 import { ClockIcon } from './icons/ClockIcon';
 import { createDesktopItemFromHistory } from './Desktop';
+import { normalizeImageUrl } from '../App';
 
 interface HistoryDockProps {
   history: GenerationHistory[];
@@ -93,7 +94,7 @@ export const HistoryDock: React.FC<HistoryDockProps> = ({
         >
           <div className="w-20 h-20 rounded-xl overflow-hidden shadow-2xl border-2 border-blue-500 opacity-80">
             <img
-              src={dragItem.imageUrl}
+              src={normalizeImageUrl(dragItem.imageUrl)}
               alt=""
               className="w-full h-full object-cover"
             />
@@ -158,7 +159,7 @@ export const HistoryDock: React.FC<HistoryDockProps> = ({
                   }}
                 >
                   <img
-                    src={item.imageUrl}
+                    src={normalizeImageUrl(item.imageUrl)}
                     alt={formatTime(item.timestamp)}
                     className="w-full h-full object-cover"
                     draggable={false}

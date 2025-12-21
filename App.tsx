@@ -1,6 +1,36 @@
 
 import React, { useState, useCallback, useRef, useEffect, useMemo } from 'react';
 import { ImageUploader } from './components/ImageUploader';
+
+/**
+ * 统一处理 imageUrl，兼容两种格式：
+ * 1. 文件路径格式: /files/output/xxx.jpg
+ * 2. 纯 base64 数据格式: /9j/4AAQ... (需要添加 data:image 前缀)
+ * 3. 完整 data URL 格式: data:image/jpeg;base64,... (直接返回)
+ */
+export const normalizeImageUrl = (url: string | undefined | null): string => {
+  if (!url) return '';
+  
+  // 已经是完整的 data URL
+  if (url.startsWith('data:')) return url;
+  
+  // 文件路径（以 / 开头，但不是 base64）
+  if (url.startsWith('/') && !url.startsWith('/9j/') && !url.startsWith('/+')) return url;
+  
+  // HTTP/HTTPS URL
+  if (url.startsWith('http://') || url.startsWith('https://')) return url;
+  
+  // 纯 base64 数据，需要添加前缀
+  // 检测常见的 base64 图片签名
+  if (url.startsWith('/9j/') || url.startsWith('iVBOR')) {
+    // JPEG 或 PNG
+    const mimeType = url.startsWith('/9j/') ? 'image/jpeg' : 'image/png';
+    return `data:${mimeType};base64,${url}`;
+  }
+  
+  // 其他情况，假定是路径
+  return url;
+};
 import { GeneratedImageDisplay } from './components/GeneratedImageDisplay';
 import { editImageWithGemini, generateCreativePromptFromImage, initializeAiClient, processBPTemplate, setThirdPartyConfig } from './services/geminiService';
 import { ApiStatus, GeneratedContent, CreativeIdea, SmartPlusConfig, ThirdPartyApiConfig, GenerationHistory, DesktopItem, DesktopImageItem, DesktopFolderItem } from './types';
@@ -987,7 +1017,7 @@ const RightPanel: React.FC<RightPanelProps> = ({
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2 min-w-0 flex-1">
           {idea.imageUrl ? (
-            <img src={idea.imageUrl} alt="" className="w-6 h-6 rounded object-cover flex-shrink-0" />
+            <img src={normalizeImageUrl(idea.imageUrl)} alt="" className="w-6 h-6 rounded object-cover flex-shrink-0" />
           ) : (
             <span className="text-sm flex-shrink-0">✨</span>
           )}
@@ -1834,10 +1864,13 @@ const App: React.FC = () => {
     const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
     const downloadFilename = filename || `ai-generated-${timestamp}.png`;
     
+    // 使用 normalizeImageUrl 处理 URL
+    const normalizedUrl = normalizeImageUrl(url);
+    
     // 如果是 base64 数据或同源URL，直接下载
-    if (url.startsWith('data:')) {
+    if (normalizedUrl.startsWith('data:')) {
       const link = document.createElement('a');
-      link.href = url;
+      link.href = normalizedUrl;
       link.download = downloadFilename;
       document.body.appendChild(link);
       link.click();
@@ -1847,7 +1880,7 @@ const App: React.FC = () => {
     
     // 对于外部URL，尝试使用fetch获取blob后下载
     try {
-      const response = await fetch(url);
+      const response = await fetch(normalizedUrl);
       const blob = await response.blob();
       const blobUrl = URL.createObjectURL(blob);
       const link = document.createElement('a');
@@ -1860,7 +1893,7 @@ const App: React.FC = () => {
     } catch (e) {
       // 如果fetch失败（CORS等问题），在新窗口打开
       console.error('下载失败，尝试在新窗口打开:', e);
-      window.open(url, '_blank');
+      window.open(normalizedUrl, '_blank');
     }
   }, []);
 

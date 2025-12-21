@@ -2,6 +2,7 @@ import React, { useRef, useState, useCallback, useEffect } from 'react';
 import { GenerationHistory } from '../types';
 import { TrashIcon } from './icons/TrashIcon';
 import { ClockIcon } from './icons/ClockIcon';
+import { normalizeImageUrl } from '../App';
 
 interface HistoryStripProps {
   history: GenerationHistory[];
@@ -217,7 +218,7 @@ export const HistoryStrip: React.FC<HistoryStripProps> = ({
                 }`}
               >
                 <img
-                  src={item.imageUrl}
+                  src={normalizeImageUrl(item.imageUrl)}
                   alt={`生成于 ${formatTime(item.timestamp)}`}
                   className="w-full h-full object-cover"
                   draggable={false}

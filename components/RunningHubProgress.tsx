@@ -5,6 +5,7 @@
 
 import React, { useEffect, useState, useCallback } from 'react';
 import { useRunningHubTasks, RunningHubTask } from '../contexts/RunningHubTaskContext';
+import { normalizeImageUrl } from '../App';
 
 // 通知提示组件
 const Toast: React.FC<{ message: string; type: 'success' | 'error'; onClose: () => void }> = ({ message, type, onClose }) => {
@@ -294,7 +295,7 @@ const TaskItem: React.FC<{ task: RunningHubTask; onDismiss: () => void; isExpand
             {task.status === 'completed' && task.imageUrl && (
                 <div className="mt-2">
                     <img
-                        src={task.imageUrl}
+                        src={normalizeImageUrl(task.imageUrl)}
                         alt="生成结果"
                         className={`w-full object-cover rounded-md border border-white/10 ${isExpanded ? 'h-48' : 'h-16'}`}
                     />

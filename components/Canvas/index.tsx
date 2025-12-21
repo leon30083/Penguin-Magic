@@ -24,6 +24,7 @@ import {
 import '@xyflow/react/dist/style.css';
 import { useTheme } from '../../contexts/ThemeContext';
 import { CreativeIdea, DesktopImageItem, GeneratedContent } from '../../types';
+import { normalizeImageUrl } from '../../App';
 
 // 自定义节点组件
 import CreativeNode from './nodes/CreativeNode';
@@ -788,7 +789,7 @@ export const Canvas: React.FC<CanvasProps> = ({
                         className="w-full px-3 py-2.5 text-sm text-left text-gray-300 hover:bg-blue-500/20 rounded-lg transition-colors flex items-center gap-3"
                       >
                         {idea.imageUrl && (
-                          <img src={idea.imageUrl} alt="" className="w-8 h-8 rounded-lg object-cover" />
+                          <img src={normalizeImageUrl(idea.imageUrl)} alt="" className="w-8 h-8 rounded-lg object-cover" />
                         )}
                         <div className="flex-1 min-w-0">
                           <div className="truncate font-medium">{idea.title}</div>

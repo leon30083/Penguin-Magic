@@ -2,6 +2,7 @@ import React, { memo } from 'react';
 import { Handle, Position, NodeProps } from '@xyflow/react';
 import type { CanvasNodeData } from '../index';
 import { useTheme } from '../../../contexts/ThemeContext';
+import { normalizeImageUrl } from '../../../App';
 
 const ImageNode: React.FC<NodeProps> = ({ id, data, selected }) => {
   const { theme } = useTheme();
@@ -47,7 +48,7 @@ const ImageNode: React.FC<NodeProps> = ({ id, data, selected }) => {
         {imageUrl ? (
           <div className="relative group">
             <img
-              src={imageUrl}
+              src={normalizeImageUrl(imageUrl)}
               alt={nodeData.label}
               className="w-full h-28 rounded-xl object-cover"
             />

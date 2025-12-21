@@ -2,6 +2,7 @@ import React from 'react';
 import { GenerationHistory } from '../types';
 import { ClockIcon } from './icons/ClockIcon';
 import { TrashIcon } from './icons/TrashIcon';
+import { normalizeImageUrl } from '../App';
 
 interface HistoryPanelProps {
   history: GenerationHistory[];
@@ -61,7 +62,7 @@ export const HistoryPanel: React.FC<HistoryPanelProps> = ({
             onClick={() => onSelect(item)}
           >
             <img
-              src={item.imageUrl}
+              src={normalizeImageUrl(item.imageUrl)}
               alt={`生成于 ${formatTime(item.timestamp)}`}
               className="w-full h-full object-cover"
               onError={(e) => {
