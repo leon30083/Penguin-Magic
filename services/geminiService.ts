@@ -424,7 +424,17 @@ export const processBPTemplate = async (
     templateIdea: CreativeIdea,
     userInputs: Record<string, string>
 ): Promise<string> => {
+    console.log('[BP Template] 开始处理:', {
+        title: templateIdea.title,
+        hasBpFields: !!templateIdea.bpFields,
+        fieldsCount: templateIdea.bpFields?.length || 0,
+        agentCount: templateIdea.bpFields?.filter(f => f.type === 'agent').length || 0,
+        hasFile: !!file,
+        userInputs
+    });
+    
     if (!templateIdea.bpFields || templateIdea.bpFields.length === 0) {
+        console.log('[BP Template] 没有bpFields，返回原始提示词');
         return templateIdea.prompt;
     }
 

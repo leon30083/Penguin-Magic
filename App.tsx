@@ -1378,9 +1378,15 @@ const App: React.FC = () => {
     if (savedThirdPartyConfig) {
       try {
         const config = JSON.parse(savedThirdPartyConfig) as ThirdPartyApiConfig;
-        // 如果没有baseUrl，设置默认值
+        // 确保所有必要字段都有默认值（兼容旧版本配置）
         if (!config.baseUrl) {
           config.baseUrl = 'https://ai.t8star.cn';
+        }
+        if (!config.model) {
+          config.model = 'nano-banana-2';
+        }
+        if (!config.chatModel) {
+          config.chatModel = 'gemini-2.5-pro';
         }
         setThirdPartyApiConfig(config);
         setThirdPartyConfig(config);

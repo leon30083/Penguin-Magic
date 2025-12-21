@@ -87,6 +87,9 @@ router.put('/:id', (req, res) => {
       updatedAt: new Date().toISOString()
     };
     
+    // 处理图片：将base64保存为文件（修复：更新时也需要处理图片）
+    processCreativeImage(updatedIdea);
+    
     ideas[index] = updatedIdea;
     JsonStorage.save(config.CREATIVE_IDEAS_FILE, ideas);
     
