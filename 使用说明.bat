@@ -12,10 +12,7 @@ echo.
 echo.
 echo   ═══════════════ 环境要求 ═══════════════
 echo.
-echo   1. Python 3.10+   下载: https://www.python.org/downloads/
-echo      (安装时勾选 "Add Python to PATH")
-echo.
-echo   2. Node.js 18+    下载: https://nodejs.org/
+echo   Node.js 18+    下载: https://nodejs.org/
 echo.
 echo.
 echo   ═══════════════ 使用步骤 ═══════════════
@@ -34,9 +31,9 @@ echo   首次安装.bat  - 安装依赖（只需运行一次）
 echo   一键启动.bat  - 启动程序
 echo   停止服务.bat  - 停止所有服务
 echo.
-echo   backend\data\   - 创意库和历史记录
-echo   backend\input\  - 上传的图片
-echo   backend\output\ - 生成的图片
+echo   data\           - 创意库和历史记录
+echo   input\          - 上传的图片
+echo   output\         - 生成的图片
 echo.
 echo.
 pause

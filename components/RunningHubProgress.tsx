@@ -5,7 +5,7 @@
 
 import React, { useEffect, useState, useCallback } from 'react';
 import { useRunningHubTasks, RunningHubTask } from '../contexts/RunningHubTaskContext';
-import { normalizeImageUrl } from '../App';
+import { normalizeImageUrl } from '../utils/image';
 
 // 通知提示组件
 const Toast: React.FC<{ message: string; type: 'success' | 'error'; onClose: () => void }> = ({ message, type, onClose }) => {

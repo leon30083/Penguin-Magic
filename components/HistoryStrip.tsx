@@ -2,7 +2,7 @@ import React, { useRef, useState, useCallback, useEffect } from 'react';
 import { GenerationHistory } from '../types';
 import { TrashIcon } from './icons/TrashIcon';
 import { ClockIcon } from './icons/ClockIcon';
-import { normalizeImageUrl } from '../App';
+import { normalizeImageUrl } from '../utils/image';
 
 interface HistoryStripProps {
   history: GenerationHistory[];

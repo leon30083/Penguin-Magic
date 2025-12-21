@@ -1,36 +1,7 @@
 
 import React, { useState, useCallback, useRef, useEffect, useMemo } from 'react';
 import { ImageUploader } from './components/ImageUploader';
-
-/**
- * 统一处理 imageUrl，兼容两种格式：
- * 1. 文件路径格式: /files/output/xxx.jpg
- * 2. 纯 base64 数据格式: /9j/4AAQ... (需要添加 data:image 前缀)
- * 3. 完整 data URL 格式: data:image/jpeg;base64,... (直接返回)
- */
-export const normalizeImageUrl = (url: string | undefined | null): string => {
-  if (!url) return '';
-  
-  // 已经是完整的 data URL
-  if (url.startsWith('data:')) return url;
-  
-  // 文件路径（以 / 开头，但不是 base64）
-  if (url.startsWith('/') && !url.startsWith('/9j/') && !url.startsWith('/+')) return url;
-  
-  // HTTP/HTTPS URL
-  if (url.startsWith('http://') || url.startsWith('https://')) return url;
-  
-  // 纯 base64 数据，需要添加前缀
-  // 检测常见的 base64 图片签名
-  if (url.startsWith('/9j/') || url.startsWith('iVBOR')) {
-    // JPEG 或 PNG
-    const mimeType = url.startsWith('/9j/') ? 'image/jpeg' : 'image/png';
-    return `data:${mimeType};base64,${url}`;
-  }
-  
-  // 其他情况，假定是路径
-  return url;
-};
+import { normalizeImageUrl } from './utils/image';
 import { GeneratedImageDisplay } from './components/GeneratedImageDisplay';
 import { editImageWithGemini, generateCreativePromptFromImage, initializeAiClient, processBPTemplate, setThirdPartyConfig } from './services/geminiService';
 import { ApiStatus, GeneratedContent, CreativeIdea, SmartPlusConfig, ThirdPartyApiConfig, GenerationHistory, DesktopItem, DesktopImageItem, DesktopFolderItem } from './types';
@@ -53,6 +24,7 @@ import * as creativeIdeasApi from './services/api/creativeIdeas';
 import * as historyApi from './services/api/history';
 import * as desktopApi from './services/api/desktop';
 import { saveToOutput } from './services/api/files';
+import { downloadImage } from './services/export';
 import { ThemeProvider, useTheme, SnowfallEffect } from './contexts/ThemeContext';
 import { Desktop, createDesktopItemFromHistory, TOP_OFFSET } from './components/Desktop';
 import { HistoryDock } from './components/HistoryDock';
@@ -158,125 +130,9 @@ interface CanvasProps {
   setIsResultMinimized: (value: boolean) => void;
 }
 
-// --- IndexedDB Service ---
-const DB_NAME = 'PenguinElloDB';
-const DB_VERSION = 3; // Incremented for history store
-const STORE_NAME = 'creativeIdeas';
-const HISTORY_STORE_NAME = 'generationHistory';
-
-const openDB = (): Promise<IDBDatabase> => {
-  return new Promise((resolve, reject) => {
-    const request = indexedDB.open(DB_NAME, DB_VERSION);
-    request.onerror = () => reject(new Error("Error opening DB"));
-    request.onsuccess = () => resolve(request.result);
-    request.onupgradeneeded = (event) => {
-      const db = (event.target as IDBOpenDBRequest).result;
-      if (!db.objectStoreNames.contains(STORE_NAME)) {
-        db.createObjectStore(STORE_NAME, { keyPath: 'id' });
-      }
-      if (!db.objectStoreNames.contains(HISTORY_STORE_NAME)) {
-        db.createObjectStore(HISTORY_STORE_NAME, { keyPath: 'id' });
-      }
-    };
-  });
-};
-
-const getAllFromDB = async (): Promise<CreativeIdea[]> => {
-  const db = await openDB();
-  return new Promise((resolve, reject) => {
-    const transaction = db.transaction(STORE_NAME, 'readonly');
-    const store = transaction.objectStore(STORE_NAME);
-    const request = store.getAll();
-    request.onerror = () => reject(new Error("Error fetching all ideas from DB."));
-    request.onsuccess = () => resolve(request.result);
-  });
-};
-
-const saveToDB = async (idea: CreativeIdea) => {
-  const db = await openDB();
-  return new Promise<void>((resolve, reject) => {
-    const transaction = db.transaction(STORE_NAME, 'readwrite');
-    const store = transaction.objectStore(STORE_NAME);
-    const request = store.put(idea);
-    request.onerror = () => reject(new Error("Error saving idea to DB."));
-    request.onsuccess = () => resolve();
-  });
-};
-
-const deleteFromDB = async (id: number) => {
-  const db = await openDB();
-  return new Promise<void>((resolve, reject) => {
-    const transaction = db.transaction(STORE_NAME, 'readwrite');
-    const store = transaction.objectStore(STORE_NAME);
-    const request = store.delete(id);
-    request.onerror = () => reject(new Error("Error deleting idea from DB."));
-    request.onsuccess = () => resolve();
-  });
-};
-
-const importToDB = async (ideas: CreativeIdea[]) => {
-    const db = await openDB();
-    return new Promise<void>((resolve, reject) => {
-        if (ideas.length === 0) return resolve();
-        const transaction = db.transaction(STORE_NAME, 'readwrite');
-        const store = transaction.objectStore(STORE_NAME);
-        transaction.oncomplete = () => resolve();
-        transaction.onerror = () => reject(new Error("Import transaction failed."));
-        ideas.forEach(idea => {
-            if (idea.order === undefined) {
-                idea.order = idea.id;
-            }
-            store.put(idea);
-        });
-    });
-};
-
-// --- History IndexedDB Operations ---
-const getAllHistoryFromDB = async (): Promise<GenerationHistory[]> => {
-  const db = await openDB();
-  return new Promise((resolve, reject) => {
-    const transaction = db.transaction(HISTORY_STORE_NAME, 'readonly');
-    const store = transaction.objectStore(HISTORY_STORE_NAME);
-    const request = store.getAll();
-    request.onerror = () => reject(new Error("Error fetching history from DB."));
-    request.onsuccess = () => resolve(request.result);
-  });
-};
-
-const saveHistoryToDB = async (item: GenerationHistory) => {
-  const db = await openDB();
-  return new Promise<void>((resolve, reject) => {
-    const transaction = db.transaction(HISTORY_STORE_NAME, 'readwrite');
-    const store = transaction.objectStore(HISTORY_STORE_NAME);
-    const request = store.put(item);
-    request.onerror = () => reject(new Error("Error saving history to DB."));
-    request.onsuccess = () => resolve();
-  });
-};
-
-const deleteHistoryFromDB = async (id: number) => {
-  const db = await openDB();
-  return new Promise<void>((resolve, reject) => {
-    const transaction = db.transaction(HISTORY_STORE_NAME, 'readwrite');
-    const store = transaction.objectStore(HISTORY_STORE_NAME);
-    const request = store.delete(id);
-    request.onerror = () => reject(new Error("Error deleting history from DB."));
-    request.onsuccess = () => resolve();
-  });
-};
-
-const clearAllHistoryFromDB = async () => {
-  const db = await openDB();
-  return new Promise<void>((resolve, reject) => {
-    const transaction = db.transaction(HISTORY_STORE_NAME, 'readwrite');
-    const store = transaction.objectStore(HISTORY_STORE_NAME);
-    const request = store.clear();
-    request.onerror = () => reject(new Error("Error clearing history from DB."));
-    request.onsuccess = () => resolve();
-  });
-};
-// --- End History IndexedDB Operations ---
-// --- End IndexedDB Service ---
+// IndexedDB 相关操作已迁移到 services/db/ 目录
+// - services/db/creativeIdeasDb.ts: 创意库本地存储
+// - services/db/historyDb.ts: 历史记录本地存储
 
 
 const LeftPanel: React.FC<LeftPanelProps> = ({
@@ -1553,7 +1409,7 @@ const App: React.FC = () => {
     }
   }, []);
   
-  // 从 Python后端加载数据（纯本地文件，不用浏览器缓存）
+  // 从 Node.js 后端加载数据（纯本地文件，不用浏览器缓存）
   const loadDataFromLocal = async () => {
     setIsLoading(true);
     try {
@@ -1600,7 +1456,7 @@ const App: React.FC = () => {
         setDesktopItems([]);
       }
     } catch (e) {
-      console.error('Python后端未运行，请先启动后端服务', e);
+      console.error('Node.js后端未运行，请先启动后端服务', e);
       setLocalCreativeIdeas([]);
       setGenerationHistory([]);
       setDesktopItems([]);
@@ -1619,7 +1475,7 @@ const App: React.FC = () => {
     );
     setLocalCreativeIdeas(updatedIdeas);
     
-    // 保存到Python后端
+    // 保存到Node.js后端
     try {
       await creativeIdeasApi.updateCreativeIdea(id, { isFavorite: !targetIdea.isFavorite });
     } catch (e) {
@@ -1860,42 +1716,8 @@ const App: React.FC = () => {
     return undefined;
   };
   
-  const downloadImage = useCallback(async (url: string, filename?: string) => {
-    const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
-    const downloadFilename = filename || `ai-generated-${timestamp}.png`;
-    
-    // 使用 normalizeImageUrl 处理 URL
-    const normalizedUrl = normalizeImageUrl(url);
-    
-    // 如果是 base64 数据或同源URL，直接下载
-    if (normalizedUrl.startsWith('data:')) {
-      const link = document.createElement('a');
-      link.href = normalizedUrl;
-      link.download = downloadFilename;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      return;
-    }
-    
-    // 对于外部URL，尝试使用fetch获取blob后下载
-    try {
-      const response = await fetch(normalizedUrl);
-      const blob = await response.blob();
-      const blobUrl = URL.createObjectURL(blob);
-      const link = document.createElement('a');
-      link.href = blobUrl;
-      link.download = downloadFilename;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      URL.revokeObjectURL(blobUrl);
-    } catch (e) {
-      // 如果fetch失败（CORS等问题），在新窗口打开
-      console.error('下载失败，尝试在新窗口打开:', e);
-      window.open(normalizedUrl, '_blank');
-    }
-  }, []);
+  // 图片下载逻辑已迁移到 services/export/desktopExporter.ts
+  // 使用 downloadImage from './services/export'
 
   const handleExportIdeas = () => {
     if (creativeIdeas.length === 0) {

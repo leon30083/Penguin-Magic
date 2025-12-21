@@ -3,7 +3,7 @@ import { GenerationHistory, DesktopImageItem, DesktopPosition } from '../types';
 import { useTheme } from '../contexts/ThemeContext';
 import { ClockIcon } from './icons/ClockIcon';
 import { createDesktopItemFromHistory } from './Desktop';
-import { normalizeImageUrl } from '../App';
+import { normalizeImageUrl } from '../utils/image';
 
 interface HistoryDockProps {
   history: GenerationHistory[];

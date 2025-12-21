@@ -9,7 +9,7 @@ import { EditIcon } from './icons/EditIcon';
 import { DownloadIcon } from './icons/DownloadIcon';
 import { UploadIcon } from './icons/UploadIcon';
 import { useTheme } from '../contexts/ThemeContext';
-import { normalizeImageUrl } from '../App';
+import { normalizeImageUrl } from '../utils/image';
 
 
 interface CreativeLibraryProps {

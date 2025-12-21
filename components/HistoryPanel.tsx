@@ -2,7 +2,7 @@ import React from 'react';
 import { GenerationHistory } from '../types';
 import { ClockIcon } from './icons/ClockIcon';
 import { TrashIcon } from './icons/TrashIcon';
-import { normalizeImageUrl } from '../App';
+import { normalizeImageUrl } from '../utils/image';
 
 interface HistoryPanelProps {
   history: GenerationHistory[];

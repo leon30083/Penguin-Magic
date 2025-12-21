@@ -8,7 +8,7 @@ export default defineConfig(({ mode }) => {
         port: 5176,
         strictPort: true,
         proxy: {
-          // 本地Python后端代理
+          // 本地 Node.js 后端代理
           '/api': {
             target: 'http://localhost:8765',
             changeOrigin: true,

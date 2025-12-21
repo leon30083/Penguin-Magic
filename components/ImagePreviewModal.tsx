@@ -4,7 +4,7 @@ import { ZoomInIcon } from './icons/ZoomInIcon';
 import { ZoomOutIcon } from './icons/ZoomOutIcon';
 import { ResetZoomIcon } from './icons/ResetZoomIcon';
 import { DownloadIcon } from './icons/DownloadIcon';
-import { normalizeImageUrl } from '../App';
+import { normalizeImageUrl } from '../utils/image';
 
 
 interface ImagePreviewModalProps {

@@ -8,7 +8,7 @@ import { EditIcon } from './icons/EditIcon';
 import { EmptyState } from './EmptyState';
 import { ImageIcon } from './icons/ImageIcon';
 import { getMatchedStory } from '../services/storyLibrary';
-import { normalizeImageUrl } from '../App';
+import { normalizeImageUrl } from '../utils/image';
 
 // 默认加载消息（当没有prompt时使用）
 const defaultLoadingMessages = [

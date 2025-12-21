@@ -16,8 +16,9 @@ import { PackageIcon } from './icons/PackageIcon';
 import { MoveOutIcon } from './icons/MoveOutIcon';
 import { RenameIcon } from './icons/RenameIcon';
 import { LayersIcon } from './icons/GridIcon';
-import JSZip from 'jszip';
-import { normalizeImageUrl } from '../App';
+// JSZip 导出逻辑已迁移到 services/export/desktopExporter.ts
+import { exportAsZip, batchDownloadImages, downloadSingleImage } from '../services/export';
+import { normalizeImageUrl } from '../utils/image';
 
 interface DesktopProps {
   items: DesktopItem[];
@@ -984,76 +985,24 @@ export const Desktop: React.FC<DesktopProps> = ({
       .filter((item): item is DesktopImageItem => item?.type === 'image');
   };
 
-  // 批量下载（逐个下载）
+  // 批量下载（使用导出服务）
   const handleBatchDownload = async (imageItems: DesktopImageItem[]) => {
     if (imageItems.length === 0) return;
     setIsExporting(true);
     
-    for (let i = 0; i < imageItems.length; i++) {
-      await handleDownloadImage(imageItems[i]);
-      // 每个文件之间稍微延迟，避免浏览器拦截
-      if (i < imageItems.length - 1) {
-        await new Promise(resolve => setTimeout(resolve, 500));
-      }
-    }
+    await batchDownloadImages(imageItems);
     
     setIsExporting(false);
     setContextMenu(null);
   };
 
-  // 压缩包导出
+  // 压缩包导出（使用导出服务）
   const handleExportAsZip = async (containerName: string, imageItems: DesktopImageItem[]) => {
     if (imageItems.length === 0) return;
     setIsExporting(true);
     
-    try {
-      const zip = new JSZip();
-      const folder = zip.folder(containerName) || zip;
-      
-      // 跟踪文件名以避免重复
-      const usedFilenames = new Set<string>();
-      
-      for (let i = 0; i < imageItems.length; i++) {
-        const img = imageItems[i];
-        // 生成唯一文件名：如果名称重复，添加索引
-        let baseName = img.name.replace(/[\\/:*?"<>|]/g, '_');
-        let filename = `${baseName}.png`;
-        let counter = 1;
-        while (usedFilenames.has(filename)) {
-          filename = `${baseName}_${counter}.png`;
-          counter++;
-        }
-        usedFilenames.add(filename);
-        
-        try {
-          let blob: Blob;
-          if (img.imageUrl.startsWith('data:')) {
-            // base64 转 Blob
-            const response = await fetch(img.imageUrl);
-            blob = await response.blob();
-          } else {
-            const response = await fetch(img.imageUrl);
-            blob = await response.blob();
-          }
-          folder.file(filename, blob);
-        } catch (e) {
-          console.error(`获取图片失败: ${img.name}`, e);
-        }
-      }
-      
-      const content = await zip.generateAsync({ type: 'blob' });
-      const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
-      const zipFilename = `${containerName}-${timestamp}.zip`;
-      
-      const link = document.createElement('a');
-      link.href = URL.createObjectURL(content);
-      link.download = zipFilename;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      URL.revokeObjectURL(link.href);
-    } catch (e) {
-      console.error('导出压缩包失败:', e);
+    const success = await exportAsZip(containerName, imageItems);
+    if (!success) {
       alert('导出失败，请稍后重试');
     }
     
