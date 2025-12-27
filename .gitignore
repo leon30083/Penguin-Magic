@@ -44,3 +44,12 @@ __pycache__/
 *.njsproj
 *.sln
 *.sw?
+
+# IDE specific
+.trae/
+
+# User Input
+用户输入文件夹/
+
+# Temp files
+video_studio_tab.png

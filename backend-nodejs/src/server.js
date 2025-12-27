@@ -13,6 +13,7 @@ const historyRouter = require('./routes/history');
 const filesRouter = require('./routes/files');
 const settingsRouter = require('./routes/settings');
 const desktopRouter = require('./routes/desktop');
+const soraRouter = require('./routes/sora');
 
 const app = express();
 
@@ -47,6 +48,7 @@ function initializeApp() {
   JsonStorage.init(config.HISTORY_FILE, []);
   JsonStorage.init(config.SETTINGS_FILE, { theme: 'dark' });
   JsonStorage.init(config.DESKTOP_ITEMS_FILE, []);
+  JsonStorage.init(config.CHARACTERS_FILE, []);
   
   console.log();
 }
@@ -71,6 +73,7 @@ app.use('/api/history', historyRouter);
 app.use('/api/files', filesRouter);
 app.use('/api/settings', settingsRouter);
 app.use('/api/desktop', desktopRouter);
+app.use('/api/sora', soraRouter);
 
 // 服务状态检查
 app.get('/api/status', (req, res) => {

@@ -28,6 +28,8 @@ import { downloadImage } from './services/export';
 import { ThemeProvider, useTheme, SnowfallEffect } from './contexts/ThemeContext';
 import { Desktop, createDesktopItemFromHistory, TOP_OFFSET } from './components/Desktop';
 import { HistoryDock } from './components/HistoryDock';
+import { SoraModal } from './components/Sora/SoraModal';
+import { VideoIcon } from './components/icons/VideoIcon';
 
 
 interface LeftPanelProps {
@@ -179,6 +181,8 @@ const LeftPanel: React.FC<LeftPanelProps> = ({
   
   // 帮助文档弹窗状态
   const [isHelpOpen, setIsHelpOpen] = useState(false);
+  // Sora Modal State
+  const [isSoraOpen, setIsSoraOpen] = useState(false);
   
   // 处理ESC关闭弹窗
   useEffect(() => {
@@ -293,6 +297,14 @@ const LeftPanel: React.FC<LeftPanelProps> = ({
             <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>
+          </button>
+          {/* Sora Studio Button */}
+          <button
+            onClick={() => setIsSoraOpen(true)}
+            className="w-7 h-7 rounded-full flex items-center justify-center transition-all duration-200 hover:bg-white/10 text-neutral-400 hover:text-white"
+            title="Sora Studio"
+          >
+            <VideoIcon className="w-3.5 h-3.5" />
           </button>
           {/* 设置按钮 */}
           <button
@@ -977,6 +989,8 @@ const LeftPanel: React.FC<LeftPanelProps> = ({
           </div>
         </div>
       )}
+      
+      <SoraModal isOpen={isSoraOpen} onClose={() => setIsSoraOpen(false)} />
   </aside>
   );
 };

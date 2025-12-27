@@ -1,4 +1,5 @@
 const path = require('path');
+require('dotenv').config({ path: path.resolve(__dirname, '..', '.env') });
 
 // 获取项目根目录 (backend-nodejs的上一级)
 const BASE_DIR = path.resolve(__dirname, '..', '..');
@@ -28,8 +29,10 @@ const config = {
   HISTORY_FILE: path.join(BASE_DIR, 'data', 'history.json'),
   SETTINGS_FILE: path.join(BASE_DIR, 'data', 'settings.json'),
   DESKTOP_ITEMS_FILE: path.join(BASE_DIR, 'data', 'desktop_items.json'),
+  CHARACTERS_FILE: path.join(BASE_DIR, 'data', 'characters.json'),
   
   // 业务配置
+  JUXIN_API_KEY: process.env.JUXIN_API_KEY,
   MAX_HISTORY_COUNT: 500,
   MAX_FILE_SIZE: 10 * 1024 * 1024, // 10MB
 };
