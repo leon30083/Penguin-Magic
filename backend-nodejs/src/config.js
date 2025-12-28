@@ -30,6 +30,8 @@ const config = {
   SETTINGS_FILE: path.join(BASE_DIR, 'data', 'settings.json'),
   DESKTOP_ITEMS_FILE: path.join(BASE_DIR, 'data', 'desktop_items.json'),
   CHARACTERS_FILE: path.join(BASE_DIR, 'data', 'characters.json'),
+  PROJECTS_FILE: path.join(BASE_DIR, 'data', 'projects.json'),
+  VIDEOS_FILE: path.join(BASE_DIR, 'data', 'videos.json'),
   
   // 业务配置
   JUXIN_API_KEY: process.env.JUXIN_API_KEY,

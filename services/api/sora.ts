@@ -43,38 +43,12 @@ export const uploadFile = async (file: File): Promise<ApiResponse<any>> => {
 
 // Create Character
 export const createCharacter = async (data: { url?: string; from_task?: string; timestamps: string }): Promise<ApiResponse<any>> => {
-  // Backend returns the character object directly
-  const response = await post<any>('/sora/characters', data);
-  // Wrap it to match ApiResponse<T> where data is T
-  // Actually, existing `post` returns ApiResponse<T>.
-  // If backend returns { id: ... }, `post` returns { success: true, data: { id: ... } } IF backend response matches that structure?
-  // Wait, `post` in index.ts expects backend to return JSON. It doesn't enforce a { success: true, data: ... } structure from the backend itself, 
-  // BUT `request` function does: `const data = await response.json(); return data;`
-  // My backend returns just the data (e.g. { id: ... }).
-  // BUT `request` function implementation:
-  // `return data;`
-  // It returns whatever the backend returns.
-  // BUT the return type is `Promise<ApiResponse<T>>`.
-  // If my backend returns `{ id: '...' }`, then `data` is `{ id: '...' }`.
-  // This does NOT match `ApiResponse<T>` which is `{ success: true, data: T } ...`.
-  
-  // Looking at `server.js`:
-  // `res.json({ success: true, data: { ... } })`
-  
-  // BUT my `sora.js` implementation:
-  // `res.json(response.data)` -> This is the Juxin API response.
-  // Juxin API response for character creation is `{ id: '...', ... }`.
-  
-  // So my backend returns `{ id: ... }`.
-  // The frontend `request` function receives `{ id: ... }`.
-  // It returns `{ id: ... }`.
-  // This is NOT `ApiResponse<T>`.
-  
-  // I need to wrap the response in my backend or frontend.
-  // Standard in this project seems to be `res.json({ success: true, data: ... })` (based on `server.js` status route).
-  // Let's check `creative.js` to see what it returns.
-  
-  return response;
+  return post<any>('/sora/characters', data);
+};
+
+// Save Character (Manual save after polling)
+export const saveCharacter = async (characterData: any): Promise<ApiResponse<any>> => {
+  return post<any>('/sora/characters/save', characterData);
 };
 
 // Get Characters

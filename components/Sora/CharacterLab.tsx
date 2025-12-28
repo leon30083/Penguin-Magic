@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useTheme } from '../../contexts/ThemeContext';
-import { uploadFile, createCharacter, getCharacters, createVideo, getTask } from '../../services/api/sora';
+import { uploadFile, createCharacter, getCharacters, createVideo, getTask, saveCharacter } from '../../services/api/sora';
 import { RefreshIcon } from '../icons/RefreshIcon';
 
 // Types
@@ -33,6 +33,10 @@ export const CharacterLab: React.FC<CharacterLabProps> = ({ onSwitchTab }) => {
   const [genTaskId, setGenTaskId] = useState('');
   const [genVideoUrl, setGenVideoUrl] = useState('');
   const [genStatus, setGenStatus] = useState<'idle' | 'creating' | 'polling' | 'completed' | 'failed'>('idle');
+
+  // Character Creation State
+  const [charCreationTaskId, setCharCreationTaskId] = useState('');
+  const [charCreationProgress, setCharCreationProgress] = useState(0);
 
   // Upload Mode State
   const [videoFile, setVideoFile] = useState<File | null>(null);
@@ -115,24 +119,95 @@ export const CharacterLab: React.FC<CharacterLabProps> = ({ onSwitchTab }) => {
       }, 5000); // Poll every 5s
   };
 
+  const pollCharacterCreation = async (taskId: string) => {
+      const maxAttempts = 120; // Allow 10 minutes
+      let attempts = 0;
+      setCharCreationProgress(0);
+
+      const interval = setInterval(async () => {
+          attempts++;
+          if (attempts > maxAttempts) {
+              clearInterval(interval);
+              setIsCreatingChar(false);
+              setStatusMsg('Character creation timed out.');
+              setCharCreationTaskId('');
+              return;
+          }
+
+          const res = await getTask(taskId);
+          if (res.success && res.data) {
+              const status = res.data.task_status || res.data.status;
+              
+              // Update progress
+              if (res.data.percentage) setCharCreationProgress(res.data.percentage);
+              
+              if (status === 'succeeded' || status === 'completed' || status === 'SUCCESS') {
+                  clearInterval(interval);
+                  setStatusMsg('Character created! Saving...');
+                  setCharCreationProgress(100);
+                  
+                  // In Sora 2 API, when task succeeds, the character info might be in the result
+                  const charData = res.data; 
+                  
+                  // Ensure we have minimal fields
+                  if (charData && (charData.id || charData.task_id)) {
+                      // If ID is task ID, we might need to map it or use it as ID
+                      // Ideally the API returns the final character object in 'data' or similar
+                      
+                      const characterToSave = {
+                          ...charData,
+                          id: charData.id || charData.task_id,
+                          username: charData.username || `user_${Date.now()}`,
+                          // Ensure we have a profile picture if possible, or fallback
+                          profile_picture_url: charData.profile_picture_url || charData.cover_url || charData.url || ''
+                      };
+
+                      const saveRes = await saveCharacter(characterToSave);
+                      if (saveRes.success) {
+                          setStatusMsg('Character saved successfully!');
+                          fetchCharacters();
+                      } else {
+                          setStatusMsg('Character created but failed to save: ' + (saveRes.error || saveRes.message));
+                      }
+                  } else {
+                      setStatusMsg('Task succeeded but no character data found.');
+                  }
+                  
+                  setIsCreatingChar(false);
+                  setCharCreationTaskId('');
+                  
+              } else if (status === 'failed' || status === 'FAIL') {
+                  clearInterval(interval);
+                  setIsCreatingChar(false);
+                  setCharCreationTaskId('');
+                  setStatusMsg('Character creation failed: ' + (res.data.error || 'Unknown error'));
+              } else {
+                  setStatusMsg(`Creating character... ${status} ${res.data.percentage ? `(${res.data.percentage}%)` : ''}`);
+              }
+          }
+      }, 5000);
+  };
+
   const handleCreateFromTask = async () => {
       if (!genTaskId || !timestamps) return;
       
       setIsCreatingChar(true);
-      setStatusMsg('Extracting character from generated video...');
+      setStatusMsg('Submitting character creation task...');
+      setCharCreationTaskId('');
       
       const res = await createCharacter({
           from_task: genTaskId,
           timestamps: timestamps
       });
       
-      setIsCreatingChar(false);
-      
-      if (res.success) {
-          setStatusMsg('Character created successfully!');
-          fetchCharacters();
+      if (res.success && res.data && res.data.id) {
+          const taskId = res.data.id;
+          setCharCreationTaskId(taskId);
+          setStatusMsg(`Character task submitted (ID: ${taskId}). Polling...`);
+          pollCharacterCreation(taskId);
       } else {
-          setStatusMsg('Character creation failed: ' + (res.error || res.message));
+          setIsCreatingChar(false);
+          setStatusMsg('Character creation failed to start: ' + (res.error || res.message));
       }
   };
 
@@ -167,20 +242,22 @@ export const CharacterLab: React.FC<CharacterLabProps> = ({ onSwitchTab }) => {
     if (!uploadUrl || !timestamps) return;
     
     setIsCreatingChar(true);
-    setStatusMsg('Creating character from URL (may fail due to API limits)...');
+    setStatusMsg('Submitting character creation task...');
+    setCharCreationTaskId('');
     
     const res = await createCharacter({
       url: uploadUrl,
       timestamps: timestamps
     });
     
-    setIsCreatingChar(false);
-    
-    if (res.success) {
-      setStatusMsg('Character created successfully!');
-      fetchCharacters();
+    if (res.success && res.data && res.data.id) {
+        const taskId = res.data.id;
+        setCharCreationTaskId(taskId);
+        setStatusMsg(`Character task submitted (ID: ${taskId}). Polling...`);
+        pollCharacterCreation(taskId);
     } else {
-      setStatusMsg('Character creation failed: ' + (res.error || res.message));
+        setIsCreatingChar(false);
+        setStatusMsg('Character creation failed to start: ' + (res.error || res.message));
     }
   };
 
@@ -330,6 +407,22 @@ export const CharacterLab: React.FC<CharacterLabProps> = ({ onSwitchTab }) => {
           
           {statusMsg && <div className="text-sm mt-2 font-mono break-all p-2 rounded bg-black/20" style={{ color: theme.textPrimary }}>{statusMsg}</div>}
           
+          {/* Character Creation Progress Bar */}
+          {isCreatingChar && (
+            <div className="w-full mt-2">
+                <div className="flex justify-between text-xs mb-1" style={{ color: theme.textSecondary }}>
+                    <span>Creating Character...</span>
+                    <span>{charCreationProgress}%</span>
+                </div>
+                <div className="w-full h-2 bg-gray-700 rounded-full overflow-hidden">
+                    <div 
+                        className="h-full bg-green-500 transition-all duration-300"
+                        style={{ width: `${charCreationProgress}%` }}
+                    />
+                </div>
+            </div>
+          )}
+
           {statusMsg.includes('successfully') && onSwitchTab && (
             <button
                 onClick={() => onSwitchTab('video')}

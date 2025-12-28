@@ -35,36 +35,33 @@ async function run() {
     
     let videoUrl = null;
 
-    // 1. Try Upload
-    if (fs.existsSync(VIDEO_PATH)) {
-        console.log(`\n--- Attempting Upload of ${path.basename(VIDEO_PATH)} ---`);
-        try {
-            const form = new FormData();
-            form.append('file', fs.createReadStream(VIDEO_PATH));
-            
-            console.log('Sending upload request...');
-            const uploadRes = await axios.post(`${BASE}/api/upload`, form, {
-                headers: {
-                    ...form.getHeaders(),
-                    'Authorization': `Bearer ${KEY}`
-                },
-                maxContentLength: Infinity,
-                maxBodyLength: Infinity,
-                validateStatus: status => true // Don't throw on error status
-            });
+    // 1. Try Upload (Buffer Test)
+    console.log(`\n--- Attempting Upload of Dummy Image ---`);
+    try {
+        const form = new FormData();
+        // Create a 1x1 transparent pixel PNG buffer
+        const buffer = Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=', 'base64');
+        form.append('file', buffer, { filename: 'test_pixel.png', contentType: 'image/png' });
+        
+        console.log('Sending upload request...');
+        const uploadRes = await axios.post(`${BASE}/api/upload`, form, {
+            headers: {
+                ...form.getHeaders(),
+                'Authorization': `Bearer ${KEY}`
+            },
+            maxContentLength: Infinity,
+            maxBodyLength: Infinity,
+            validateStatus: status => true
+        });
 
-            console.log('Upload status:', uploadRes.status);
-            if (uploadRes.status === 200 && uploadRes.data.code === 200) { // Check code if needed
-                 videoUrl = uploadRes.data.data;
-                 console.log('Upload SUCCESS. URL:', videoUrl);
-            } else {
-                console.log('Upload FAILED. Data:', JSON.stringify(uploadRes.data).substring(0, 200));
-            }
-        } catch (e) {
-            console.error('Upload EXCEPTION:', e.message);
+        console.log('Upload status:', uploadRes.status);
+        if (uploadRes.status === 200) {
+             console.log('Upload SUCCESS. URL:', uploadRes.data.data);
+        } else {
+            console.log('Upload FAILED. Data:', JSON.stringify(uploadRes.data).substring(0, 200));
         }
-    } else {
-        console.log(`File not found: ${VIDEO_PATH}`);
+    } catch (e) {
+        console.error('Upload EXCEPTION:', e.message);
     }
 
     // 2. Create Character (using uploaded URL or Fallback)

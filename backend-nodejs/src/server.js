@@ -14,6 +14,7 @@ const filesRouter = require('./routes/files');
 const settingsRouter = require('./routes/settings');
 const desktopRouter = require('./routes/desktop');
 const soraRouter = require('./routes/sora');
+const projectsRouter = require('./routes/projects');
 
 const app = express();
 
@@ -74,6 +75,7 @@ app.use('/api/files', filesRouter);
 app.use('/api/settings', settingsRouter);
 app.use('/api/desktop', desktopRouter);
 app.use('/api/sora', soraRouter);
+app.use('/api/projects', projectsRouter);
 
 // 服务状态检查
 app.get('/api/status', (req, res) => {

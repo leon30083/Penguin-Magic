@@ -83,24 +83,15 @@ router.post('/upload', upload.single('file'), async (req, res) => {
   }
 });
 
-// 2. Create Character Proxy
+// 2. Create Character Proxy (Just proxies the creation task)
 router.post('/characters', async (req, res) => {
   try {
     console.log('Creating character with payload:', req.body);
     const response = await juxinApi.post('/sora/v1/characters', req.body);
     
-    // Save to local characters.json
-    const newCharacter = response.data;
-    
-    if (newCharacter && newCharacter.id) {
-       const characters = JsonStorage.load(config.CHARACTERS_FILE, []);
-       
-       const exists = characters.find(c => c.id === newCharacter.id);
-       if (!exists) {
-           characters.push(newCharacter);
-           JsonStorage.save(config.CHARACTERS_FILE, characters);
-       }
-    }
+    // Note: Sora 2 character creation is async and returns a task ID usually,
+    // or if it returns immediate data, we should let the frontend decide when to save.
+    // We do NOT save to characters.json here anymore to support async polling flow.
 
     res.json({ success: true, data: response.data });
   } catch (error) {
@@ -111,6 +102,32 @@ router.post('/characters', async (req, res) => {
         details: error.response ? error.response.data : error.message 
     });
   }
+});
+
+// 2.5 Save Character (Manually called by frontend after polling success)
+router.post('/characters/save', (req, res) => {
+    try {
+        const newCharacter = req.body;
+        if (!newCharacter || !newCharacter.id || !newCharacter.username) {
+            return res.status(400).json({ success: false, error: 'Invalid character data' });
+        }
+
+        const characters = JsonStorage.load(config.CHARACTERS_FILE, []);
+        
+        const existsIndex = characters.findIndex(c => c.id === newCharacter.id);
+        if (existsIndex >= 0) {
+            characters[existsIndex] = newCharacter; // Update existing
+        } else {
+            characters.push(newCharacter);
+        }
+        
+        JsonStorage.save(config.CHARACTERS_FILE, characters);
+        
+        res.json({ success: true, data: newCharacter });
+    } catch (error) {
+        console.error('Save Character error:', error);
+        res.status(500).json({ success: false, error: 'Failed to save character' });
+    }
 });
 
 // 3. Get Characters
