@@ -354,3 +354,100 @@ docs(readme): 更新安装说明
 2. 在 `components/Desktop.tsx` 添加渲染逻辑
 3. 更新拖拽和选择逻辑
 4. 在 `backend-nodejs/src/routes/desktop.js` 添加存储支持
+
+---
+
+## MCP (Model Context Protocol) 使用说明
+
+### MCP 工具速查
+
+| 需求 | 使用 MCP | 工具 |
+|------|---------|------|
+| 查架构 | Memory | `mcp__memory__search_nodes` |
+| 存知识 | Memory | `mcp__memory__create_entities` |
+| 搜代码 | GitHub | `mcp__github__search_code` |
+| 创建 PR | GitHub | `mcp__github__create_pull_request` |
+| 创建 Issue | GitHub | `mcp__github__issue_write` |
+| 查文档 | Context7 | `mcp__context7__query-docs` |
+| 搜最新 | Web Search Prime | `mcp__web-search-prime__webSearchPrime` |
+| 读网页 | Web Reader | `mcp__web-reader__webReader` |
+| UI 转码 | ZAI | `mcp__zai-mcp-server__ui_to_artifact` |
+| 诊断错 | ZAI | `mcp__zai-mcp-server__diagnose_error_screenshot` |
+
+### 使用示例
+
+#### 查询项目架构知识
+
+```typescript
+// 搜索相关组件
+mcp__memory__search_nodes({ query: "Canvas architecture" })
+
+// 读取特定节点
+mcp__memory__open_nodes({ names: ["App.tsx", "Desktop.tsx"] })
+```
+
+#### 查询技术文档
+
+```typescript
+// 1. 先解析库 ID
+mcp__context7__resolve-library_id({ libraryName: "reactflow", query: "custom nodes" })
+// 返回: "/xyflow/react"
+
+// 2. 再查询文档
+mcp__context7__query-docs({ libraryId: "/xyflow/react", query: "How to create custom nodes" })
+```
+
+#### 搜索代码示例
+
+```typescript
+// 搜索 React 组件中的 useCallback 使用
+mcp__github__search_code({ query: "useCallback filetype:tsx org:leon30083" })
+
+// 搜索特定函数实现
+mcp__github__search_code({ query: "function fetchCreativeIdeas language:typescript" })
+```
+
+#### 创建 Pull Request
+
+```typescript
+mcp__github__create_pull_request({
+  owner: "leon30083",
+  repo: "Penguin-Magic",
+  title: "feat(canvas): 添加视频生成节点",
+  head: "feature/video-node",
+  base: "dev",
+  body: `## 概述
+添加 Veo 模型视频生成节点...
+
+## 变更
+- 新增 VideoNode 组件
+- 集成 Veo API
+
+## 测试
+- [ ] 功能正常
+- [ ] 错误处理完善`
+})
+```
+
+#### UI 设计转代码
+
+```typescript
+mcp__zai-mcp-server__ui_to_artifact({
+  image_source: "design.png",
+  output_type: "code",
+  prompt: "转换为 React + TypeScript 组件，遵循企鹅工坊代码风格，使用函数式组件和 Hooks"
+})
+```
+
+### MCP 使用原则
+
+1. **优先查询**: 开发前先搜索 Memory MCP 中的项目知识
+2. **适度使用**: 简单任务直接解决，不滥用 MCP
+3. **结果验证**: MCP 结果需人工验证，不可盲目信任
+4. **知识沉淀**: 有价值的知识及时存入 Memory MCP
+
+### 相关文档
+
+- `.claude/mcp_config.json` - MCP 配置文件
+- `docs/MCP_USAGE_GUIDE.md` - MCP 详细使用指南
+- `docs/MCP_BEST_PRACTICES.md` - MCP 最佳实践

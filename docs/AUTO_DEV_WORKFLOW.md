@@ -10,12 +10,13 @@
 
 1. [项目概述](#一项目概述)
 2. [开发环境配置](#二开发环境配置)
-3. [四阶段×十二原则方法论](#三四阶段十二原则方法论)
-4. [上下文控制规范](#四上下文控制规范-glm-47-专用)
-5. [胶水编程实践指南](#五胶水编程实践指南)
-6. [代码质量规范](#六代码质量规范)
-7. [Git 工作流](#七-git-工作流)
-8. [常见问题与解决方案](#八常见问题与解决方案)
+3. [MCP 使用规范](#三mcp-使用规范)
+4. [四阶段×十二原则方法论](#四四阶段十二原则方法论)
+5. [上下文控制规范](#五上下文控制规范-glm-47-专用)
+6. [胶水编程实践指南](#六胶水编程实践指南)
+7. [代码质量规范](#七代码质量规范)
+8. [Git 工作流](#八git-工作流)
+9. [常见问题与解决方案](#九常见问题与解决方案)
 
 ---
 
@@ -107,9 +108,168 @@ cd backend-nodejs && npm install && cd ..
 
 ---
 
-## 三、四阶段×十二原则方法论
+## 三、MCP 使用规范
 
-### 3.1 方法论概览
+### 3.1 MCP 概述
+
+MCP (Model Context Protocol) 是一个开放协议，允许 AI 应用与外部数据源和工具进行标准化交互。企鹅工坊已配置以下 MCP 服务器:
+
+| MCP 服务器 | 主要功能 | 相关性 |
+|-----------|---------|-------|
+| **Memory** | 知识图谱、架构决策记录 | ⭐⭐⭐⭐⭐ |
+| **GitHub** | 代码仓库、PR、Issue 管理 | ⭐⭐⭐⭐⭐ |
+| **Context7** | 技术文档查询 | ⭐⭐⭐⭐⭐ |
+| **Web Search Prime** | 联网搜索、最新趋势 | ⭐⭐⭐⭐ |
+| **Web Reader** | 网页内容读取 | ⭐⭐⭐⭐ |
+| **ZRead** | 开源仓库快速读取 | ⭐⭐⭐ |
+| **ZAI MCP** | UI 转代码、错误诊断 | ⭐⭐⭐ |
+| **4.5v Image Analysis** | 图像分析、UI 理解 | ⭐⭐⭐ |
+| **Chrome DevTools** | UI 自动化测试 | ⭐⭐⭐ |
+
+### 3.2 MCP 工具速查表
+
+| 需求 | 使用 MCP | 工具 |
+|------|---------|------|
+| 查架构 | Memory | `mcp__memory__search_nodes` |
+| 存知识 | Memory | `mcp__memory__create_entities` |
+| 搜代码 | GitHub | `mcp__github__search_code` |
+| 创建 PR | GitHub | `mcp__github__create_pull_request` |
+| 创建 Issue | GitHub | `mcp__github__issue_write` |
+| 查文档 | Context7 | `mcp__context7__query-docs` |
+| 搜最新 | Web Search Prime | `mcp__web-search-prime__webSearchPrime` |
+| 读网页 | Web Reader | `mcp__web-reader__webReader` |
+| UI 转码 | ZAI | `mcp__zai-mcp-server__ui_to_artifact` |
+| 诊断错 | ZAI | `mcp__zai-mcp-server__diagnose_error_screenshot` |
+
+### 3.3 开发前准备 (使用 Memory + Web Search MCP)
+
+```typescript
+// 1. 查询项目架构知识
+mcp__memory__search_nodes({ query: "Desktop component architecture" })
+
+// 2. 查找相关组件关系
+mcp__memory__open_nodes({ names: ["App.tsx", "Desktop.tsx", "Canvas.tsx"] })
+
+// 3. 搜索最新技术趋势
+mcp__web-search-prime__webSearchPrime({ query: "React Flow 2026 best practices" })
+```
+
+### 3.4 开发中 (使用 Context7 + GitHub + Web Reader + ZRead MCP)
+
+```typescript
+// 1. 查询技术文档 (Context7)
+// 先解析库 ID
+mcp__context7__resolve-library_id({ libraryName: "reactflow", query: "custom nodes" })
+// 返回: "/xyflow/react"
+// 再查询文档
+mcp__context7__query-docs({ libraryId: "/xyflow/react", query: "How to create custom nodes" })
+
+// 2. 搜索代码示例 (GitHub)
+mcp__github__search_code({ query: "useCallback filetype:tsx org:leon30083" })
+
+// 3. 读取在线文档 (Web Reader)
+mcp__web-reader__webReader({ url: "https://reactflow.dev/learn", return_format: "markdown" })
+
+// 4. 分析开源仓库 (ZRead)
+mcp__zread__get_repo_structure({ repo_name: "xyflow/react", dir_path: "/packages/src" })
+```
+
+### 3.5 UI 开发 (使用 ZAI + 4.5v Image Analysis MCP)
+
+```typescript
+// 1. UI 设计转代码 (ZAI)
+mcp__zai-mcp-server__ui_to_artifact({
+  image_source: "design.png",
+  output_type: "code",
+  prompt: "转换为 React + TypeScript 组件，遵循企鹅工坊代码风格"
+})
+
+// 2. 分析竞品 UI (4.5v)
+mcp__4_5v_mcp__analyze_image({
+  imageSource: "ui-screenshot.png",
+  prompt: "分析这个 UI 的设计风格和交互模式"
+})
+```
+
+### 3.6 开发后 (使用 GitHub MCP)
+
+```typescript
+// 1. 创建 Pull Request
+mcp__github__create_pull_request({
+  owner: "leon30083",
+  repo: "Penguin-Magic",
+  title: "feat(canvas): 添加视频生成节点",
+  head: "feature/video-node",
+  base: "dev",
+  body: "## 概述\n添加 Veo 模型视频生成节点...\n\n## 变更\n- 新增 VideoNode 组件\n- 集成 Veo API\n\n## 测试\n- [ ] 功能正常\n- [ ] 错误处理完善"
+})
+
+// 2. 请求代码审查
+mcp__github__request_copilot_review({ owner: "leon30083", repo: "Penguin-Magic", pullNumber: 42 })
+
+// 3. 更新 Memory 知识库
+mcp__memory__add_observations({
+  observations: [{
+    entityName: "VideoNode",
+    contents: ["新增视频生成节点，位于 components/nodes/VideoNode.tsx", "集成 Veo API 服务"]
+  }]
+})
+```
+
+### 3.7 Memory MCP 知识管理
+
+#### 创建实体
+
+```typescript
+mcp__memory__create_entities({
+  "entities": [
+    {
+      "name": "Desktop.tsx",
+      "entityType": "React Component",
+      "observations": [
+        "桌面工作空间组件，2,471 行代码",
+        "支持图片项、文件夹项、堆栈项",
+        "基于网格的拖拽定位系统"
+      ]
+    }
+  ]
+})
+```
+
+#### 建立关系
+
+```typescript
+mcp__memory__create_relations({
+  "relations": [
+    {
+      "from": "App.tsx",
+      "to": "Desktop.tsx",
+      "relationType": "导入并渲染"
+    }
+  ]
+})
+```
+
+### 3.8 MCP 使用原则
+
+| 原则 | 说明 |
+|------|------|
+| **优先查询** | 使用前先搜索 Memory MCP 中的项目知识 |
+| **适度使用** | 简单任务直接解决，不滥用 MCP |
+| **结果验证** | MCP 结果需人工验证，不可盲目信任 |
+| **知识沉淀** | 有价值的知识及时存入 Memory MCP |
+
+### 3.9 相关文档
+
+- `.claude/mcp_config.json` - MCP 配置文件
+- `docs/MCP_USAGE_GUIDE.md` - MCP 详细使用指南
+- `docs/MCP_BEST_PRACTICES.md` - MCP 最佳实践
+
+---
+
+## 四、四阶段×十二原则方法论
+
+### 4.1 方法论概览
 
 ```
 ┌─────────────┬─────────────┬─────────────┬─────────────┐
@@ -121,7 +281,7 @@ cd backend-nodejs && npm install && cd ..
 └─────────────┴─────────────┴─────────────┴─────────────┘
 ```
 
-### 3.2 准备阶段 (Setup)
+### 4.2 准备阶段 (Setup)
 
 #### 原则 1: 单一真源
 
@@ -163,7 +323,7 @@ CLAUDE.md                 # AI 助手项目指令
 - 保持对话主题单一
 - 定期清理无关历史
 
-### 3.3 执行阶段 (Execute)
+### 4.3 执行阶段 (Execute)
 
 #### 原则 4: 人类在环
 
@@ -204,7 +364,7 @@ AI: 生成组件代码 → 人类: 准备测试数据
 AI: 实现 API 逻辑 → 人类: 设计 UI 样式
 ```
 
-### 3.4 协作阶段 (Collaborate)
+### 4.4 协作阶段 (Collaborate)
 
 #### 原则 7: 负载预算
 
@@ -238,7 +398,7 @@ git commit -m "feat(canvas): 添加视频生成节点
 "
 ```
 
-### 3.5 迭代阶段 (Iterate)
+### 4.5 迭代阶段 (Iterate)
 
 #### 原则 10: 休息反思
 
@@ -270,13 +430,13 @@ git commit -m "feat(canvas): 添加视频生成节点
 
 ---
 
-## 四、上下文控制规范 (GLM-4.7 专用)
+## 五、上下文控制规范 (GLM-4.7 专用)
 
-### 4.1 限制说明
+### 5.1 限制说明
 
 **GLM-4.7 最大上下文**: 200,000 tokens (约 175,000 字符)
 
-### 4.2 控制策略
+### 5.2 控制策略
 
 #### 策略 1: 限制单次返回长度
 
@@ -349,7 +509,7 @@ async function getCachedContent(path: string) {
 - components/nodes/TextNode.tsx:50-75"
 ```
 
-### 4.3 上下文清理建议
+### 5.3 上下文清理建议
 
 #### 新任务开始前
 
@@ -374,13 +534,13 @@ async function getCachedContent(path: string) {
 
 ---
 
-## 五、胶水编程实践指南
+## 六、胶水编程实践指南
 
-### 5.1 核心宣言
+### 6.1 核心宣言
 
 > **AI 写代码，人审代码，AI 连接代码，人审连接**
 
-### 5.2 三大痛点解决
+### 6.2 三大痛点解决
 
 | 痛点 | 解决方案 |
 |------|----------|
@@ -388,7 +548,7 @@ async function getCachedContent(path: string) {
 | 复杂性爆炸 | 复杂性归零 (组合简单模块) |
 | 门槛过高 | 门槛消失 (复用成熟方案) |
 
-### 5.3 核心流程
+### 6.3 核心流程
 
 ```
 1. 明确目标
@@ -402,11 +562,11 @@ async function getCachedContent(path: string) {
 5. 验证运行 (测试集成结果)
 ```
 
-### 5.4 金句
+### 6.4 金句
 
 > **"能抄不写，能连不造，能复用不原创"**
 
-### 5.5 实践示例
+### 6.5 实践示例
 
 #### 示例 1: 集成图片裁剪功能
 
@@ -447,9 +607,9 @@ const useStore = create((set) => ({
 
 ---
 
-## 六、代码质量规范
+## 七、代码质量规范
 
-### 6.1 代码风格
+### 7.1 代码风格
 
 #### 命名规范
 
@@ -494,7 +654,7 @@ function functionName(param1: string, param2: number): boolean {
 }
 ```
 
-### 6.2 类型安全
+### 7.2 类型安全
 
 ```typescript
 // ✅ 推荐: 使用 interface 定义对象
@@ -521,7 +681,7 @@ function process<T>(data: T): T {
 }
 ```
 
-### 6.3 错误处理
+### 7.3 错误处理
 
 ```typescript
 // 统一错误处理模式
@@ -537,7 +697,7 @@ try {
 }
 ```
 
-### 6.4 性能优化
+### 7.4 性能优化
 
 ```typescript
 // 使用 useCallback 优化函数
@@ -558,9 +718,9 @@ const MemoizedComponent = React.memo(({ data }) => {
 
 ---
 
-## 七、Git 工作流
+## 八、Git 工作流
 
-### 7.1 分支策略
+### 8.1 分支策略
 
 ```
 main (生产环境)
@@ -571,7 +731,7 @@ feature/* (功能分支)
 hotfix/* (紧急修复)
 ```
 
-### 7.2 提交规范
+### 8.2 提交规范
 
 ```
 <type>(<scope>): <subject>
@@ -606,7 +766,7 @@ git commit -m "feat(canvas): 添加视频生成节点
 Closes #123"
 ```
 
-### 7.3 PR 流程
+### 8.3 PR 流程
 
 1. 创建功能分支
    ```bash
@@ -628,9 +788,9 @@ Closes #123"
 
 ---
 
-## 八、常见问题与解决方案
+## 九、常见问题与解决方案
 
-### 8.1 API 调用失败
+### 9.1 API 调用失败
 
 **问题**: API 返回 401/403 错误
 
@@ -656,7 +816,7 @@ async function callWithRetry(fn, retries = 3) {
 }
 ```
 
-### 8.2 状态更新不生效
+### 9.2 状态更新不生效
 
 **问题**: setState 后界面没有更新
 
@@ -673,7 +833,7 @@ setState(prev => ({
 }));
 ```
 
-### 8.3 Electron 通信问题
+### 9.3 Electron 通信问题
 
 **问题**: 主进程与渲染进程通信失败
 
@@ -697,7 +857,7 @@ ipcMain.handle('save-file', async (event, data) => {
 });
 ```
 
-### 8.4 内存泄漏
+### 9.4 内存泄漏
 
 **问题**: 应用运行一段时间后变慢
 

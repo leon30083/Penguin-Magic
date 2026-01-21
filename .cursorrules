@@ -70,3 +70,110 @@ API 开发:
 - 生产数据存储在 %APPDATA%/penguin-magic
 - 生成历史限制 500 条
 - 缩略图自动生成 (160px, 80% 质量)
+
+---
+
+## MCP (Model Context Protocol) 使用规范
+
+### MCP 工具选择指南
+
+| 需求 | 使用 MCP | 工具 |
+|------|---------|------|
+| 查询项目架构知识 | Memory | `mcp__memory__search_nodes` |
+| 存储架构决策 | Memory | `mcp__memory__create_entities` |
+| 搜索代码示例 | GitHub | `mcp__github__search_code` |
+| 查询技术文档 | Context7 | `mcp__context7__query-docs` |
+| 搜索最新技术 | Web Search Prime | `mcp__web-search-prime__webSearchPrime` |
+| 读取网页内容 | Web Reader | `mcp__web-reader__webReader` |
+| 分析开源仓库 | ZRead | `mcp__zread__get_repo_structure` |
+| UI 设计转代码 | ZAI | `mcp__zai-mcp-server__ui_to_artifact` |
+| 错误截图诊断 | ZAI | `mcp__zai-mcp-server__diagnose_error_screenshot` |
+| 技术图理解 | ZAI | `mcp__zai-mcp-server__understand_technical_diagram` |
+| 创建 Pull Request | GitHub | `mcp__github__create_pull_request` |
+| 创建 Issue | GitHub | `mcp__github__issue_write` |
+
+### 开发前准备 (使用 Memory + Web Search MCP)
+
+```typescript
+// 1. 查询项目架构知识
+mcp__memory__search_nodes({ query: "Desktop component architecture" })
+
+// 2. 查找相关组件关系
+mcp__memory__open_nodes({ names: ["App.tsx", "Desktop.tsx", "Canvas.tsx"] })
+
+// 3. 搜索最新技术趋势
+mcp__web-search-prime__webSearchPrime({ query: "React Flow 2026 best practices" })
+```
+
+### 开发中 (使用 Context7 + GitHub + Web Reader + ZRead MCP)
+
+```typescript
+// 1. 查询技术文档 (Context7)
+// 先解析库 ID: mcp__context7__resolve-library_id({ libraryName: "reactflow" })
+// 再查询: mcp__context7__query-docs({ libraryId: "/xyflow/react", query: "..." })
+
+// 2. 搜索代码示例 (GitHub)
+mcp__github__search_code({ query: "useCallback filetype:tsx org:leon30083" })
+
+// 3. 读取在线文档 (Web Reader)
+mcp__web-reader__webReader({ url: "https://reactflow.dev/learn", return_format: "markdown" })
+
+// 4. 分析开源仓库 (ZRead)
+mcp__zread__get_repo_structure({ repo_name: "xyflow/react", dir_path: "/packages/src" })
+```
+
+### UI 开发 (使用 ZAI + 4.5v Image Analysis MCP)
+
+```typescript
+// 1. UI 设计转代码 (ZAI)
+mcp__zai-mcp-server__ui_to_artifact({
+  image_source: "design.png",
+  output_type: "code",
+  prompt: "转换为 React + TypeScript 组件，遵循企鹅工坊代码风格"
+})
+
+// 2. 分析竞品 UI (4.5v)
+mcp__4_5v_mcp__analyze_image({
+  imageSource: "ui-screenshot.png",
+  prompt: "分析这个 UI 的设计风格和交互模式"
+})
+```
+
+### 开发后 (使用 GitHub MCP)
+
+```typescript
+// 1. 创建 Pull Request
+mcp__github__create_pull_request({
+  owner: "leon30083",
+  repo: "Penguin-Magic",
+  title: "feat(canvas): 添加视频生成节点",
+  head: "feature/video-node",
+  base: "dev",
+  body: "PR 描述..."
+})
+
+// 2. 请求代码审查
+mcp__github__request_copilot_review({ owner: "leon30083", repo: "Penguin-Magic", pullNumber: 42 })
+
+// 3. 更新 Memory 知识库
+mcp__memory__add_observations({
+  observations: [{
+    entityName: "VideoNode",
+    contents: ["新增视频生成节点，位于 components/nodes/VideoNode.tsx"]
+  }]
+})
+```
+
+### MCP 使用原则
+
+1. **优先查询**: 使用前先搜索 Memory MCP 中的项目知识
+2. **适度使用**: 简单任务直接解决，不滥用 MCP
+3. **结果验证**: MCP 结果需人工验证，不可盲目信任
+4. **知识沉淀**: 有价值的知识及时存入 Memory MCP
+
+### MCP 配置
+
+- 配置文件: `.claude/mcp_config.json`
+- 环境变量: `.env` 中设置 `GITHUB_TOKEN`
+- 详细文档: `docs/MCP_USAGE_GUIDE.md`
+- 最佳实践: `docs/MCP_BEST_PRACTICES.md`
