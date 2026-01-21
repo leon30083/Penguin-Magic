@@ -1,0 +1,93 @@
+# Cursor IDE Project Coding Rules
+
+# Project Overview
+- Name: {PROJECT_NAME}
+- Type: {PROJECT_TYPE} (e.g., React + TypeScript, Node.js, Python)
+- Description: {PROJECT_DESCRIPTION}
+
+# Tech Stack
+- Frontend: {FRAMEWORK} {VERSION}
+- Language: {LANGUAGE} {VERSION}
+- Build Tool: {BUILD_TOOL} {VERSION}
+- {Additional technologies...}
+
+# Development Commands
+- {COMMAND_1}    # Description
+- {COMMAND_2}    # Description
+- {COMMAND_3}    # Description
+
+# Code Standards
+- Use {COMMENT_LANGUAGE} for comments and documentation
+- Follow {CODE_STYLE} conventions
+- Prefer functional components with hooks (React)
+- Use TypeScript for type safety
+
+# Key Directories
+- {DIRECTORY_1}    # Description
+- {DIRECTORY_2}    # Description
+- {DIRECTORY_3}    # Description
+
+# Core Concepts
+- {CONCEPT_1}
+- {CONCEPT_2}
+- {CONCEPT_3}
+
+# Development Principles
+1. Keep functions focused and single-purpose
+2. Prefer composition over inheritance
+3. Write self-documenting code
+4. Add comments for complex logic only
+
+# API Development
+- API routes in: {API_DIRECTORY}
+- Use {API_STYLE} (REST/GraphQL)
+- Error handling with {ERROR_HANDLER}
+
+# Type System
+- Type definitions in: {TYPES_FILE}
+- Use interface for object shapes
+- Use enum for fixed values
+
+# Important Notes
+- {NOTE_1}
+- {NOTE_2}
+- {NOTE_3}
+
+---
+
+## MCP (Model Context Protocol) Quick Reference
+
+### MCP Tool Selection
+
+| Need | Use MCP | Tool |
+|------|---------|------|
+| Query architecture | Memory | `search_nodes` |
+| Store decisions | Memory | `create_entities` |
+| Code examples | GitHub | `search_code` |
+| Latest docs | Context7 | `query-docs` |
+| Web search | Web Search Prime | `webSearchPrime` |
+| Web content | Web Reader | `webReader` |
+| UI to code | ZAI | `ui_to_artifact` |
+| Error diagnosis | ZAI | `diagnose_error_screenshot` |
+| Create PR | GitHub | `create_pull_request` |
+| Create Issue | GitHub | `issue_write` |
+
+### Development Workflow
+
+**Before Development:**
+1. Search Memory MCP for relevant architecture knowledge
+2. Use Web Search Prime for latest trends
+
+**During Development:**
+1. Query Context7 MCP for documentation
+2. Search GitHub MCP for code examples
+3. Use Web Reader MCP for online docs
+
+**After Development:**
+1. Create Pull Request via GitHub MCP
+2. Update Memory MCP with new knowledge
+
+### MCP Configuration
+- Config file: `.claude/mcp_config.json`
+- Environment: `.env` with `GITHUB_TOKEN`
+- Documentation: `docs/MCP_USAGE_GUIDE.md`
