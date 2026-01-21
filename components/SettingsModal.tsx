@@ -3,6 +3,7 @@ import { ThirdPartyApiConfig } from '../types';
 import { useTheme, ThemeName } from '../contexts/ThemeContext';
 import { SoraConfig, getSoraConfig, saveSoraConfig } from '../services/soraService';
 import { VeoConfig, getVeoConfig, saveVeoConfig } from '../services/veoService';
+import { GLMConfig, getGLMConfigFromStorage, saveGLMConfig } from '../services/glmService';
 import { Eye as EyeIcon, EyeOff as EyeOffIcon, Check, X, RefreshCw, Moon as MoonIcon, Sun as SunIcon, Save as SaveIcon, Cpu as CpuIcon, Folder as FolderIcon, ExternalLink as ExternalLinkIcon } from 'lucide-react';
 
 // 应用版本号 - 从vite构建时注入，来源于package.json
@@ -79,16 +80,23 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
   const [showGeminiKey, setShowGeminiKey] = useState(false);
   const [showSoraKey, setShowSoraKey] = useState(false);
   const [showVeoKey, setShowVeoKey] = useState(false);
+  const [showGlmKey, setShowGlmKey] = useState(false);
   const [saveSuccessMessage, setSaveSuccessMessage] = useState<string | null>(null);
-  
+
   const [soraConfig, setSoraConfig] = useState<SoraConfig>({
     apiKey: '',
     baseUrl: 'https://ai.t8star.cn'
   });
-  
+
   const [veoConfig, setVeoConfig] = useState<VeoConfig>({
     apiKey: '',
     baseUrl: 'https://ai.t8star.cn'
+  });
+
+  const [glmConfig, setGlmConfig] = useState<GLMConfig>({
+    apiKey: '',
+    model: 'glm-4-flash',
+    baseUrl: 'https://open.bigmodel.cn/api/paas/v4/'
   });
 
   const [updateStatus, setUpdateStatus] = useState<'idle' | 'checking' | 'up-to-date' | 'error'>('idle');
@@ -114,6 +122,8 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
       setSoraConfig({ ...savedSoraConfig, baseUrl: savedSoraConfig.baseUrl || 'https://ai.t8star.cn' });
       const savedVeoConfig = getVeoConfig();
       setVeoConfig({ ...savedVeoConfig, baseUrl: savedVeoConfig.baseUrl || 'https://ai.t8star.cn' });
+      const savedGlmConfig = getGLMConfigFromStorage();
+      setGlmConfig(savedGlmConfig);
       setUpdateStatus('idle');
       
       // 获取存储路径
@@ -161,6 +171,12 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
   const handleSaveVeoConfig = () => {
     saveVeoConfig(veoConfig);
     setSaveSuccessMessage('Veo3.1 视频 API 已保存');
+    setTimeout(() => setSaveSuccessMessage(null), 2000);
+  };
+
+  const handleSaveGlmConfig = () => {
+    saveGLMConfig(glmConfig);
+    setSaveSuccessMessage('GLM 文本处理 API 已保存');
     setTimeout(() => setSaveSuccessMessage(null), 2000);
   };
 
@@ -532,6 +548,66 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
               </div>
               <button className="btn btn-primary w-full" onClick={handleSaveVeoConfig}>
                 保存 Veo3.1 配置
+              </button>
+            </div>
+          </div>
+
+          {/* TEXT PROCESSING API (GLM) */}
+          <div>
+            <div className="section-title">TEXT PROCESSING API</div>
+
+            {/* GLM */}
+            <div className="config-card">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="option-icon" style={{ background: 'linear-gradient(135deg, #a855f7, #7c3aed)' }}>
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2">
+                    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+                  </svg>
+                </div>
+                <div>
+                  <h4 className="text-sm font-semibold" style={{ color: styles.textPrimary }}>GLM 文本处理 (智谱清言)</h4>
+                  <p className="text-xs" style={{ color: styles.textSecondary }}>用于提示词优化、旁白处理等</p>
+                </div>
+              </div>
+              <div className="form-group">
+                <label className="form-label">API 地址</label>
+                <input
+                  type="text"
+                  className="form-input"
+                  value={glmConfig.baseUrl}
+                  onChange={(e) => setGlmConfig({ ...glmConfig, baseUrl: e.target.value })}
+                  placeholder="https://open.bigmodel.cn/api/paas/v4/"
+                />
+              </div>
+              <div className="form-group">
+                <label className="form-label">GLM API Key</label>
+                <div className="input-with-btn">
+                  <input
+                    type={showGlmKey ? 'text' : 'password'}
+                    className="form-input"
+                    value={glmConfig.apiKey}
+                    onChange={(e) => setGlmConfig({ ...glmConfig, apiKey: e.target.value })}
+                    placeholder="输入 GLM API Key"
+                  />
+                  <button className="input-btn" onClick={() => setShowGlmKey(!showGlmKey)}>
+                    {showGlmKey ? <EyeOffIcon className="w-4 h-4" /> : <EyeIcon className="w-4 h-4" />}
+                  </button>
+                </div>
+              </div>
+              <div className="form-group">
+                <label className="form-label">模型选择</label>
+                <select
+                  className="form-input"
+                  value={glmConfig.model}
+                  onChange={(e) => setGlmConfig({ ...glmConfig, model: e.target.value as 'glm-4-flash' | 'glm-4-plus' | 'glm-4' })}
+                >
+                  <option value="glm-4-flash">glm-4-flash (快速)</option>
+                  <option value="glm-4-plus">glm-4-plus (高级)</option>
+                  <option value="glm-4">glm-4 (标准)</option>
+                </select>
+              </div>
+              <button className="btn btn-primary w-full" onClick={handleSaveGlmConfig}>
+                保存 GLM 配置
               </button>
             </div>
           </div>

@@ -96,7 +96,9 @@ export interface CreativeIdea {
 }
 
 // 工作流节点类型
-export type WorkflowNodeType = 'text' | 'image' | 'idea' | 'edit' | 'video' | 'llm' | 'resize' | 'relay' | 'remove-bg' | 'upscale';
+export type WorkflowNodeType = 'text' | 'image' | 'idea' | 'edit' | 'video' | 'llm' | 'resize' | 'relay' | 'remove-bg' | 'upscale'
+  // WinJin 整合节点
+  | 'characterLibrary' | 'promptOptimizer' | 'narrator' | 'narratorProcessor';
 
 // 工作流节点
 export interface WorkflowNode {

@@ -380,6 +380,32 @@ export async function analyzeImage(
   throw new Error('GLM API 未返回有效响应');
 }
 
+// ==================== 配置管理 ====================
+
+/**
+ * 获取 GLM 配置
+ */
+export function getGLMConfigFromStorage(): GLMConfig {
+  const saved = localStorage.getItem('glmConfig');
+  if (saved) {
+    return JSON.parse(saved);
+  }
+  return {
+    apiKey: '',
+    model: 'glm-4-flash',
+    baseUrl: 'https://open.bigmodel.cn/api/paas/v4/'
+  };
+}
+
+/**
+ * 保存 GLM 配置
+ */
+export function saveGLMConfig(config: GLMConfig) {
+  localStorage.setItem('glmConfig', JSON.stringify(config));
+  // 同时更新运行时配置
+  setGLMConfig(config);
+}
+
 // ==================== 类型导出 ====================
 
 export type { GLMConfig };

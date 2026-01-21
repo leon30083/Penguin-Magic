@@ -35,8 +35,15 @@ import TextNode from './nodes/TextNode';
 import SaveImageNode from './nodes/SaveImageNode';
 import MultiAngleNode from './nodes/MultiAngleNode';
 
+// WinJin 整合节点
+import CharacterLibraryNode from './nodes/CharacterLibraryNode';
+import PromptOptimizerNode from './nodes/PromptOptimizerNode';
+import NarratorNode from './nodes/NarratorNode';
+import NarratorProcessorNode from './nodes/NarratorProcessorNode';
+
 // 节点类型定义
-export type CanvasNodeType = 'creative' | 'image' | 'prompt' | 'text' | 'saveImage' | 'multiAngle';
+export type CanvasNodeType = 'creative' | 'image' | 'prompt' | 'text' | 'saveImage' | 'multiAngle'
+  | 'characterLibrary' | 'promptOptimizer' | 'narrator' | 'narratorProcessor';
 
 export interface CanvasNodeData {
   [key: string]: unknown; // 索引签名，满足 Record<string, unknown> 约束
@@ -65,6 +72,11 @@ const nodeTypes: NodeTypes = {
   text: TextNode,
   saveImage: SaveImageNode,
   multiAngle: MultiAngleNode,
+  // WinJin 整合节点
+  characterLibrary: CharacterLibraryNode,
+  promptOptimizer: PromptOptimizerNode,
+  narrator: NarratorNode,
+  narratorProcessor: NarratorProcessorNode,
 };
 
 // 自定义可删除边组件
