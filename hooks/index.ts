@@ -17,3 +17,7 @@ export type { UseDesktopLayoutProps, UseDesktopLayoutReturn } from './useDesktop
 
 export { useDesktopInteraction } from './useDesktopInteraction';
 export type { UseDesktopInteractionProps, UseDesktopInteractionReturn, ClipboardState, ContextMenuState } from './useDesktopInteraction';
+
+// WinJin 整合 Hooks
+export { useConnectedData } from './useConnectedData';
+export { useWorkflowExecution } from './useWorkflowExecution';

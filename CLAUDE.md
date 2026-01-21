@@ -6,6 +6,8 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 **Penguin Magic (企鹅工坊)** is a desktop-class AI image creative management application - the world's first AI image desktop management tool. It combines AI image generation with a visual desktop workspace for organizing and managing creative content.
 
+**WinJin Integration**: Video generation workflow features have been integrated from the WinJin project, adding character management, GLM text processing, and narrator optimization capabilities.
+
 ### Architecture
 
 This is a **three-tier Electron application**:
@@ -17,7 +19,7 @@ This is a **three-tier Electron application**:
 
 2. **Backend (Node.js + Express)** - Located in `backend-nodejs/`
    - Entry: `backend-nodejs/src/server.js` (181 lines)
-   - RESTful API with 8 route modules
+   - RESTful API with 9 route modules (新增: character.js)
    - File-based JSON storage in `backend-nodejs/data/`
    - Image processing with Sharp
 
@@ -29,20 +31,24 @@ This is a **three-tier Electron application**:
 ### Key Directories
 
 ```
-├── components/          # React components (27 files)
+├── components/          # React components
 │   ├── Canvas/         # Canvas/node-based workflow components
-│   ├── Desktop/        # Desktop workspace (Desktop.tsx: 2,471 lines)
-│   └── nodes/          # 6 node types for canvas
+│   │   └── nodes/      # Canvas nodes (新增: CharacterLibraryNode, PromptOptimizerNode, NarratorNode, NarratorProcessorNode)
+│   └── Desktop/        # Desktop workspace
 ├── services/           # Business logic
-│   ├── api/           # API client layer (9 modules)
+│   ├── api/           # API client layer
 │   ├── geminiService.ts
+│   ├── glmService.ts  # 新增: GLM API 服务
 │   ├── pebblingGeminiService.ts
 │   ├── veoService.ts  # Video generation
 │   └── soraService.ts # Video generation
+├── hooks/             # React Hooks (新增: useConnectedData, useWorkflowExecution)
+├── utils/             # 工具函数 (新增: workflowStorage)
 ├── backend-nodejs/
-│   └── src/routes/    # API routes (8 files)
+│   ├── src/routes/    # API routes (新增: character.js)
+│   └── src/utils/     # 后端工具 (新增: characterStorage)
 ├── electron/          # Electron main process
-├── types.ts           # Core type definitions (314 lines)
+├── types.ts           # Core type definitions (新增: Character, VideoTask, GLMConfig, NarratorItem)
 └── App.tsx            # Main app component
 ```
 
@@ -111,12 +117,24 @@ Grid-based positioning with drag-and-drop, multi-selection support.
 
 ### Canvas/Workflow System
 Node-based visual programming using `@xyflow/react`:
-- Node types: TextNode, ImageNode, PromptNode, CreativeNode, SaveImageNode, MultiAngleNode
+- Original node types: TextNode, ImageNode, PromptNode, CreativeNode, SaveImageNode, MultiAngleNode
+- **New node types (WinJin integration)**:
+  - `CharacterLibraryNode` - Character library browser and selection
+  - `PromptOptimizerNode` - Prompt optimization using GLM
+  - `NarratorNode` - Multi-line narrator input
+  - `NarratorProcessorNode` - Batch narrator optimization with GLM
 - Stored in `CreativeIdea.isWorkflow` with nodes/connections
 - RunningHub integration for external workflows
+- Workflow storage via `utils/workflowStorage` (WinJin移植)
 
 ### AI Service Integration
 - **Google Gemini** - `services/geminiService.ts`
+- **GLM (智谱清言)** - `services/glmService.ts` (新增)
+  - Prompt optimization (`optimizePrompt`)
+  - Narrator optimization (`optimizeNarrator`, `optimizeNarratorBatch`)
+  - Text expansion (`expandText`)
+  - Translation (`translateText`)
+  - Image analysis (`analyzeImage`)
 - **Pebbling** - `services/pebblingGeminiService.ts`
 - **Veo/Sora** - Video generation services
 - **Third-party APIs** - Configurable via settings
@@ -155,6 +173,15 @@ Enums:
 - `desktop.js` - Desktop state persistence
 - `imageOps.js` - Image operations (merge, crop, resize)
 - `canvas.js` - Canvas/workflow data
+- `character.js` - Character management (新增 WinJin 整合)
+  - GET `/api/characters` - List characters with filtering
+  - GET `/api/characters/:id` - Get single character
+  - POST `/api/characters` - Add character
+  - PUT `/api/characters/:id` - Update character
+  - DELETE `/api/characters/:id` - Delete character
+  - GET `/api/characters/search/:query` - Search characters
+  - GET `/api/characters/stats/summary` - Character statistics
+  - POST `/api/characters/import` - Batch import
 
 ## Configuration
 
@@ -202,3 +229,37 @@ Enums:
 2. Add UI handling in creative library component
 3. Implement prompt generation logic in services
 4. Update backend creative route if needed
+
+## WinJin Integration Features
+
+### Character System (角色系统)
+- **Character** type in `types.ts` with platform support (zhenzhen, sora, runway, other)
+- **CharacterStorage** utility in `backend-nodejs/src/utils/characterStorage.js`
+- **CharacterLibraryNode** canvas component for character selection
+- Features: CRUD operations, favorites, search, platform filtering
+
+### GLM Text Processing (GLM 文本处理)
+- **glmService** with optimized prompts and narrator processing
+- **PromptOptimizerNode** - Single or batch prompt optimization
+- **NarratorNode** - Multi-line narrator input with drag-and-drop reordering
+- **NarratorProcessorNode** - Batch narrator optimization
+
+### Workflow Management (工作流管理)
+- **useWorkflowExecution** hook - Topological sort with cycle detection
+- **useConnectedData** hook - Auto-sync connection data between nodes
+- **workflowStorage** utility - Save/load/export/import named workflows
+- LocalStorage persistence with workflow versioning
+
+### GLM API Configuration
+To enable GLM features, add to settings:
+```typescript
+{
+  "glmApiKey": "your_glm_api_key",
+  "glmModel": "glm-4-flash", // or "glm-4-plus"
+  "glmBaseUrl": "https://open.bigmodel.cn/api/paas/v4/"
+}
+```
+
+### Data Storage
+New data files in `backend-nodejs/data/`:
+- `characters.json` - Character library storage

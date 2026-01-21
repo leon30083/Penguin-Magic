@@ -15,6 +15,7 @@ const settingsRouter = require('./routes/settings');
 const desktopRouter = require('./routes/desktop');
 const imageOpsRouter = require('./routes/imageOps');
 const canvasRouter = require('./routes/canvas');
+const characterRouter = require('./routes/character'); // WinJin 整合: 角色管理
 
 const app = express();
 
@@ -83,6 +84,7 @@ app.use('/api/settings', settingsRouter);
 app.use('/api/desktop', desktopRouter);
 app.use('/api/image-ops', imageOpsRouter);
 app.use('/api/canvas', canvasRouter);
+app.use('/api/characters', characterRouter); // WinJin 整合: 角色管理
 
 // 服务状态检查
 app.get('/api/status', (req, res) => {

@@ -311,3 +311,85 @@ export interface DesktopState {
   gridSize: number; // 网格大小
   showGrid: boolean; // 是否显示网格
 }
+
+// ========== 角色系统类型 (WinJin 整合) ==========
+
+// 角色平台类型
+export type CharacterPlatformType = 'zhenzhen' | 'sora' | 'runway' | 'other';
+
+// 角色数据
+export interface Character {
+  id: string;
+  username: string; // 用户名
+  permalink: string; // 主页链接
+  profilePictureUrl: string; // 头像链接
+  sourceVideoUrl: string; // 来源视频链接
+  platform: CharacterPlatformType; // 平台名称
+  timestamps: string; // 时间戳，格式: "1,3" 表示 1s 和 3s
+  alias: string; // 别名
+  isFavorite?: boolean; // 是否收藏
+  createdAt: string; // 创建时间
+  updatedAt: string; // 更新时间
+}
+
+// 角色筛选选项
+export interface CharacterFilterOptions {
+  platform?: CharacterPlatformType;
+  favorite?: boolean;
+  limit?: number;
+  skip?: number;
+  searchQuery?: string;
+}
+
+// ========== 视频生成类型 (WinJin 整合) ==========
+
+// 视频生成模式
+export type VideoGenerateMode = 'text-to-video' | 'image-to-video';
+
+// 视频任务状态
+export type VideoTaskStatus = 'pending' | 'processing' | 'completed' | 'failed';
+
+// 视频任务
+export interface VideoTask {
+  id: string;
+  mode: VideoGenerateMode;
+  prompt: string;
+  imageUrl?: string; // 图生视频时的参考图
+  characterId?: string; // 使用的角色 ID
+  status: VideoTaskStatus;
+  videoUrl?: string; // 完成后的视频 URL
+  errorMessage?: string;
+  createdAt: string;
+  completedAt?: string;
+}
+
+// 视频生成配置
+export interface VideoGenerateConfig {
+  model: string; // sora-2, veo-3 等
+  duration?: number; // 视频时长（秒）
+  aspectRatio?: '9:16' | '16:9' | '1:1';
+  resolution?: '720p' | '1080p' | '4k';
+}
+
+// ========== GLM 配置类型 (WinJin 整合) ==========
+
+// GLM API 配置
+export interface GLMConfig {
+  apiKey: string;
+  model: 'glm-4-flash' | 'glm-4-plus' | 'glm-4';
+  baseUrl: string;
+}
+
+// ========== 旁白系统类型 (WinJin 整合) ==========
+
+// 旁白项
+export interface NarratorItem {
+  id: string;
+  text: string;
+  order: number; // 顺序
+  optimizedText?: string; // 优化后的文本
+  isOptimized?: boolean; // 是否已优化
+}
+
+// 旁白模式
+export type NarratorMode = 'sequential' | 'parallel' | 'batch';
