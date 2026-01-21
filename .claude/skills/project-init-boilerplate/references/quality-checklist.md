@@ -6,13 +6,49 @@ Validation checklist for ensuring project initialization quality.
 
 ## Table of Contents
 
-1. [MCP Configuration Validation](#mcp-configuration-validation)
-2. [Documentation Completeness](#documentation-completeness)
-3. [Knowledge Base Integrity](#knowledge-base-integrity)
-4. [Environment Setup](#environment-setup)
-5. [Development Standards](#development-standards)
-6. [Git Repository](#git-repository)
-7. [Final Verification](#final-verification)
+1. [Skill Authoring Best Practices](#skill-authoring-best-practices)
+2. [MCP Configuration Validation](#mcp-configuration-validation)
+3. [Documentation Completeness](#documentation-completeness)
+4. [Knowledge Base Integrity](#knowledge-base-integrity)
+5. [Environment Setup](#environment-setup)
+6. [Development Standards](#development-standards)
+7. [Git Repository](#git-repository)
+8. [Final Verification](#final-verification)
+
+---
+
+## Skill Authoring Best Practices
+
+Privacy and path reference checks for skills intended for public distribution.
+
+### Privacy and Path Checks
+
+- [ ] No absolute paths to user directories (`/home/username/`, `/Users/username/`)
+- [ ] No hardcoded `~/.claude/skills/` installation paths
+- [ ] No personal usernames, company names, or product names
+- [ ] Only relative paths within skill bundle (`references/guide.md`)
+- [ ] Standard placeholders used where needed (`~/workspace/project`, `username`)
+
+### Versioning Checks
+
+- [ ] No version sections in SKILL.md (`## Version`, `## Changelog`, `## Release History`)
+- [ ] No version numbers in SKILL.md body
+- [ ] README.md may contain version information (user-facing documentation)
+- [ ] Version managed by marketplace.json (for published skills)
+
+### Writing Style Checks
+
+- [ ] Uses imperative/infinitive form ("Do X", not "You should do X")
+- [ ] Third person perspective in description
+- [ ] Clear, actionable instructions
+- [ ] No second person ("you") in instructional text
+
+### Reference Material Guidelines
+
+- [ ] SKILL.md body <= 500 lines
+- [ ] Long content split into `references/` directory
+- [ ] Reference files use descriptive names (`api_endpoints.md`, not `reference.md`)
+- [ ] All references linked from SKILL.md exist
 
 ---
 

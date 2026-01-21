@@ -63,6 +63,24 @@ say "帮我初始化项目"
 # 5. Configure development standards
 ```
 
+**Initialization checklist** (copy and track progress):
+```
+Project Initialization Progress:
+- [ ] Step 1: Analyze project structure and detect tech stack
+- [ ] Step 2: Create .claude/mcp_config.json with selected MCP servers
+- [ ] Step 3: Create .env.example with environment variable templates
+- [ ] Step 4: Generate docs/MCP_USAGE_GUIDE.md
+- [ ] Step 5: Generate docs/MCP_BEST_PRACTICES.md
+- [ ] Step 6: Generate docs/AUTO_DEV_WORKFLOW.md
+- [ ] Step 7: Initialize Memory MCP knowledge base (entities + relations)
+- [ ] Step 8: Update .cursorrules with project-specific rules
+- [ ] Step 9: Update/create CLAUDE.md with project overview
+- [ ] Step 10: Run quality validation
+- [ ] Step 11: Create git commit with conventional commit message
+
+Note: Skill creation support available via skill-creator and references/skill-authoring.md
+```
+
 ### Pattern 2: Step-by-Step Initialization
 
 ```bash
@@ -202,6 +220,23 @@ say "检查初始化质量"
 # - Knowledge base initialized
 # - Environment variables set
 # - Git commit ready
+```
+
+### Pattern 13: Skill Creation Support
+
+```bash
+# Create a new Skill using skill-creator
+say "创建一个新 skill"
+
+# skill-creator will guide you through:
+# 1. Understanding use cases and examples
+# 2. Planning reusable content structure
+# 3. Writing SKILL.md following best practices
+# 4. Creating reference documentation
+# 5. Privacy and security review
+# 6. Packaging for distribution
+
+# See also: references/skill-authoring.md for detailed best practices
 ```
 
 ## Examples
@@ -404,6 +439,7 @@ Context: New Python backend project
 - `references/documentation.md` - Documentation templates and generators
 - `references/knowledge-base.md` - Knowledge base initialization patterns
 - `references/quality-checklist.md` - Quality gate checklist
+- `references/skill-authoring.md` - Skill creation best practices
 
 ### Source Material (Penguin-Magic Project)
 
@@ -414,6 +450,10 @@ This Skill is extracted from the comprehensive initialization work done in the P
 - `docs/AUTO_DEV_WORKFLOW.md` - 912-line workflow guide
 - `docs/tech-docs/` - Technical documentation synchronized via Context7 MCP
 - Memory MCP knowledge base - 48 entities, 47 relationships
+
+### Related Skills
+
+- **skill-creator** - Interactive skill creation guide. Use this when creating new Skills or when user says "create skill", "编写 skill", "创建 skill". The skill-creator ensures all Skills follow official best practices including privacy checks, proper naming, and progressive disclosure.
 
 ### Vibe-Coding Philosophy Integration
 
@@ -455,10 +495,19 @@ Before considering this Skill complete, verify:
 
 ### Validation Commands
 
-```bash
-# From repo root (basic validation)
-./skills/claude-skills/scripts/validate-skill.sh skills/project-init-boilerplate
+To verify this skill is properly configured:
 
-# From repo root (strict validation)
-./skills/claude-skills/scripts/validate-skill.sh skills/project-init-boilerplate --strict
-```
+1. Check SKILL.md syntax is valid
+2. Verify name matches directory: `project-init-boilerplate`
+3. Confirm all reference files exist in `references/`
+4. Test with: "帮我初始化项目" in a test repository
+
+Manual verification checklist:
+- [ ] YAML frontmatter is valid
+- [ ] name uses only lowercase, numbers, hyphens
+- [ ] description is non-empty and < 1024 characters
+- [ ] SKILL.md body < 500 lines (current: ~465)
+- [ ] All reference files linked from SKILL.md exist
+- [ ] README.md exists for user documentation
+- [ ] No hardcoded absolute paths in any files
+- [ ] No version numbers in SKILL.md body

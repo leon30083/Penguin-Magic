@@ -11,7 +11,8 @@ This directory contains detailed reference materials for the Project Init Boiler
 | [mcp-servers.md](./mcp-servers.md) | Complete MCP server configuration guide for all 10 servers | ~800 |
 | [documentation.md](./documentation.md) | Documentation generation templates and patterns | ~600 |
 | [knowledge-base.md](./knowledge-base.md) | Memory MCP knowledge base initialization guide | ~500 |
-| [quality-checklist.md](./quality-checklist.md) | Quality gate checklist for validation | ~300 |
+| [quality-checklist.md](./quality-checklist.md) | Quality gate checklist for validation | ~400 |
+| [skill-authoring.md](./skill-authoring.md) | Skill creation best practices and guidelines | ~300 |
 
 ## Quick Navigation
 
@@ -23,6 +24,7 @@ This directory contains detailed reference materials for the Project Init Boiler
 - **Generate project documentation** → [documentation.md](./documentation.md)
 - **Initialize project knowledge base** → [knowledge-base.md](./knowledge-base.md)
 - **Validate initialization quality** → [quality-checklist.md](./quality-checklist.md)
+- **Create a new Skill** → [skill-authoring.md](./skill-authoring.md)
 
 ### By Project Type
 
@@ -103,6 +105,18 @@ Quality gate checklist for validating initialization:
 - Knowledge base integrity
 - Environment setup verification
 - Git commit standards
+- Skill authoring best practices compliance
+
+### skill-authoring.md
+
+Best practices for creating new Skills:
+- Privacy and path reference guidelines
+- Versioning rules
+- Writing style requirements
+- Progressive disclosure principles
+- Reference file naming conventions
+- Token budget management
+- Creation workflow checklist
 
 ## Related Resources
 

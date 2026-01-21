@@ -302,6 +302,41 @@ say "检查初始化质量"
 # ✓ Git 提交就绪
 ```
 
+## Skill 创建支持
+
+本 Skill 包含完整的 Skill 编写最佳实践支持，帮助您创建符合官方标准的 Skills：
+
+### 创建新 Skill
+
+```bash
+# 使用 skill-creator 创建新 Skill
+say "创建一个新 skill"
+
+# skill-creator 将引导您完成：
+# 1. 理解具体使用示例
+# 2. 规划可复用内容结构
+# 3. 编写 SKILL.md（遵循最佳实践）
+# 4. 创建参考文档
+# 5. 隐私和安全审查
+# 6. 打包分发
+```
+
+### 参考文档
+
+- `references/skill-authoring.md` - 完整的 Skill 编写最佳实践指南
+  - Privacy and Path References（隐私和路径引用）
+  - Versioning 规则
+  - Writing Style 要求
+  - Progressive Disclosure 原则
+  - Reference File Naming 约定
+  - Token Budget 管理
+  - Creation Workflow 流程
+  - Quality Checklist
+
+### 相关 Skills
+
+- **skill-creator** - 交互式 Skill 创建指南。当需要创建 Skills 时，AI 将自动调用此 Skill。
+
 ## 故障排除
 
 ### 常见问题
@@ -333,11 +368,12 @@ say "生成缺失的文档"
 
 | 文档 | 描述 | 行数 |
 |------|------|------|
-| `index.md` | 导航索引 | ~100 |
+| `index.md` | 导航索引 | ~130 |
 | `mcp-servers.md` | MCP 服务器详细配置指南 | ~800 |
 | `documentation.md` | 文档生成模板 | ~600 |
 | `knowledge-base.md` | 知识库初始化指南 | ~500 |
-| `quality-checklist.md` | 质量检查清单 | ~300 |
+| `quality-checklist.md` | 质量检查清单（含 Skill 最佳实践） | ~400 |
+| `skill-authoring.md` | Skill 编写最佳实践指南 | ~300 |
 
 ### assets/ - 模板文件
 
