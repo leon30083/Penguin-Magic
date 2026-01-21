@@ -72,3 +72,5 @@ desktop.ini
 *.njsproj
 *.sln
 *.sw?
+/nul
+/.dev-docs/可能会用到的skill/glm-coding-skill/

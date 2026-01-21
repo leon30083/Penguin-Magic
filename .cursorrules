@@ -1,0 +1,72 @@
+# Cursor IDE 项目编码规则
+
+项目概述:
+- 名称: 企鹅工坊 (Penguin-Magic)
+- 类型: Electron + React + TypeScript 桌面应用
+- 描述: AI 图像创意管理应用 - 世界首款 AI 图像桌面管理工具
+
+技术栈:
+- 前端: React 19.1.1 + TypeScript 5.8.2 + Vite 6.2.0
+- 后端: Node.js + Express 4.18.0
+- 桌面: Electron 39.2.7
+- 画布: @xyflow/react 12.10.0
+
+开发命令:
+- npm run dev              # 启动 Vite 开发服务器 (端口 5176)
+- npm run electron:dev     # 启动 Electron 开发模式
+- npm run build            # 构建前端
+- npm run electron:build   # 构建 Electron 应用
+- npm run package          # 打包当前平台
+- npm run package:all      # 打包全平台
+
+代码规范:
+- 使用中文注释和文档
+- 组件使用函数式组件 + Hooks
+- 遵循现有代码风格
+- 优先复用现有组件和工具函数
+- 避免过度工程化
+
+关键目录:
+- components/      # React 组件 (Canvas, Desktop, nodes)
+- services/        # 业务逻辑服务 (API 层, AI 服务)
+- backend-nodejs/  # Node.js 后端 (routes, data)
+- electron/        # Electron 主进程
+- types.ts         # 核心类型定义
+
+核心概念:
+- 桌面系统: 支持图片项、文件夹项、堆栈项
+- 画布系统: 基于节点的可视化编程
+- 创意库: 支持 Smart/SmartPlus/BP/RunningHub/Workflow 模式
+- 数据存储: 基于 JSON 文件 (无数据库)
+
+开发原则:
+1. 上下文控制 (GLM-4.7 限制 200K tokens)
+   - 使用 offset + limit 分段读取大文件
+   - 使用 head_limit 限制搜索结果
+   - 优先使用 Task agent 的 Explore 模式
+
+2. 四阶段×十二原则
+   - 准备: 单一真源、提示词先行、上下文洁净
+   - 执行: 人类在环、任务块化、并行流动
+   - 协作: 负载预算、流保护罩、可复现性
+   - 迭代: 休息反思、技能均衡、好奇文化
+
+3. 胶水编程
+   - 能抄不写,能连不造,能复用不原创
+   - AI 写代码,人审代码,AI 连接代码,人审连接
+
+API 开发:
+- 路由定义在 backend-nodejs/src/routes/
+- API 客户端定义在 services/api/
+- 使用 RESTful 风格
+
+类型系统:
+- 核心类型定义在 types.ts
+- 使用 interface 定义数据结构
+- 使用 enum 定义固定值集合
+
+注意事项:
+- 无测试配置,需手动测试
+- 生产数据存储在 %APPDATA%/penguin-magic
+- 生成历史限制 500 条
+- 缩略图自动生成 (160px, 80% 质量)
