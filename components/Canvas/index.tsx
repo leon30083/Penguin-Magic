@@ -40,10 +40,11 @@ import CharacterLibraryNode from './nodes/CharacterLibraryNode';
 import PromptOptimizerNode from './nodes/PromptOptimizerNode';
 import NarratorNode from './nodes/NarratorNode';
 import NarratorProcessorNode from './nodes/NarratorProcessorNode';
+import VideoGenerateNode from './nodes/VideoGenerateNode';
 
 // 节点类型定义
 export type CanvasNodeType = 'creative' | 'image' | 'prompt' | 'text' | 'saveImage' | 'multiAngle'
-  | 'characterLibrary' | 'promptOptimizer' | 'narrator' | 'narratorProcessor';
+  | 'characterLibrary' | 'promptOptimizer' | 'narrator' | 'narratorProcessor' | 'videoGenerate';
 
 export interface CanvasNodeData {
   [key: string]: unknown; // 索引签名，满足 Record<string, unknown> 约束
@@ -77,6 +78,7 @@ const nodeTypes: NodeTypes = {
   promptOptimizer: PromptOptimizerNode,
   narrator: NarratorNode,
   narratorProcessor: NarratorProcessorNode,
+  videoGenerate: VideoGenerateNode,
 };
 
 // 自定义可删除边组件
